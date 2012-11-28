@@ -20,5 +20,10 @@
 - (NSURL *)applicationDocumentsDirectory;
 //This method is used to set the network Acitivity indicator across application.
 - (void)setNetworkActivityIndicatorVisible:(NSNumber *)setVisible;
+//Adds given object to NSUserDefault at given key.
++(void)setObjectToNSUserDefault:(id)object  forKey:(NSString*) key;
++(id)getObjectFromNSUserDefaultForKey:(NSString*)key;
++(void)clearAllNSUserDefaultValues;
+
 
 @end

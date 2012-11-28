@@ -8,13 +8,12 @@
 
 #import "RecentPhotoTableViewController.h"
 #import "PhotoViewController.h"
-
+#import "AppDelegate.h"
+#define recentPhotoCapacity 7
 
 @implementation RecentPhotoTableViewController
 
 @synthesize recentPhotoArray;
-
-
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -24,9 +23,6 @@
     }
     return self;
 }
-
-
-
 -(NSDictionary*) photoAtIndexPath:(NSIndexPath*) indexPath{
     
     NSDictionary* thisPhoto = [self.recentPhotoArray objectAtIndex:indexPath.row];
@@ -51,11 +47,11 @@
 }
 
 
--(void) RetrieveRecentPhotos
+-(void) retrieveRecentPhotos
 {
-    NSUserDefaults *defaults= [NSUserDefaults standardUserDefaults];
-    NSMutableArray* mutableArray = [defaults objectForKey:@"recentPhotoArray"];
-    self.recentPhotoArray = [[mutableArray reverseObjectEnumerator] allObjects];
+    //[AppDelegate clearAllNSUserDefaultValues];
+    self.recentPhotoArray = [ AppDelegate getObjectFromNSUserDefaultForKey:@"recentPhotoArray"];
+    
 }
 - (void)didReceiveMemoryWarning
 {
@@ -70,8 +66,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [self RetrieveRecentPhotos];
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -79,7 +74,6 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
-
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -90,6 +84,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self retrieveRecentPhotos];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -160,53 +156,59 @@
 }
 */
 
-/*
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
+        NSMutableArray* mutableCopy = [self.recentPhotoArray mutableCopy] ;
+        [ mutableCopy removeObjectAtIndex:indexPath.row];
+        self.recentPhotoArray = mutableCopy;
+        [AppDelegate setObjectToNSUserDefault:self.recentPhotoArray forKey:@"recentPhotoArray"];
+        
+        // Delete the row from the tableView
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
 
-/*
+
+
 // Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
+    NSMutableArray* photoArray = [self.recentPhotoArray mutableCopy];
+    NSDictionary* dictionaryToMove = [photoArray objectAtIndex:fromIndexPath.row];
+    [photoArray removeObjectAtIndex:fromIndexPath.row];
+    [photoArray insertObject:dictionaryToMove atIndex:toIndexPath.row];
+    self.recentPhotoArray = photoArray;
+    [AppDelegate setObjectToNSUserDefault:photoArray forKey:@"recentPhotoArray"];
 }
-*/
 
-/*
+
+
 // Override to support conditional rearranging of the table view.
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the item to be re-orderable.
+    if(self.recentPhotoArray.count ==1){
+        return NO;
+    }
     return YES;
 }
-*/
+
 
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
-    
     PhotoViewController* pvc = [[PhotoViewController alloc] init];
     NSDictionary* thisPhoto = [self photoAtIndexPath:indexPath];
     pvc.photoDictionary = thisPhoto;
     pvc.title = [self photoTitle:indexPath];
 	[self.navigationController pushViewController:pvc animated:YES];
 }
-
 @end

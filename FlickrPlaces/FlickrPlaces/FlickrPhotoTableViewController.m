@@ -11,21 +11,82 @@
 #import "PhotoViewController.h"
 #import "AppDelegate.h"
 
-
-
 @implementation FlickrPhotoTableViewController
 
-@synthesize placeID,listOfPhotos;
+@synthesize placeID,dictionaryOfPhotos,sections;
 
--(NSArray*) listOfPhotos{
-    if(!listOfPhotos){ 
-        AppDelegate * appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-        [appDelegate setNetworkActivityIndicatorVisible:[NSNumber numberWithBool:YES]];
-        listOfPhotos = [FlickrFetcher photosAtPlace:self.placeID];
+-(NSArray*) getListOfPhotos{
+
+    AppDelegate * appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [appDelegate setNetworkActivityIndicatorVisible:[NSNumber numberWithBool:YES]];
+    
+    // Using Descriptor for sorting
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"dateupload" ascending:YES];
+    NSArray * listOfPhotos = [[FlickrFetcher photosAtPlace:self.placeID] sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sortDescriptor, nil]];
         [appDelegate performSelector:@selector(setNetworkActivityIndicatorVisible:) withObject:[NSNumber numberWithBool:NO] afterDelay:1.0];
-        //[appDelegate setNetworkActivityIndicatorVisible:NO];
-    }
+
     return listOfPhotos;
+}
+
+-(NSMutableDictionary*) dictionaryOfPhotos{
+    if(!dictionaryOfPhotos)
+    {
+        dictionaryOfPhotos = [[NSMutableDictionary alloc] init];
+        NSArray * listOfPhotos = [self getListOfPhotos];
+        int photoCount = listOfPhotos.count;
+        NSMutableArray* photoArray = [[NSMutableArray alloc] init];
+        int currentHour = 0;
+        for(int i=0;i<photoCount;++i)
+        {
+            NSDictionary* photoDictionary = [listOfPhotos objectAtIndex:i];
+            double timeInterval = [ [photoDictionary valueForKey:@"dateupload"] doubleValue] ;
+            NSDate* thisPhotoDate = [[NSDate alloc] initWithTimeIntervalSince1970:timeInterval];
+            int thisPhotoHour = [thisPhotoDate timeIntervalSinceNow] /3600 ;
+            thisPhotoHour *=-1;
+            
+            if(currentHour == thisPhotoHour){
+                [photoArray addObject:photoDictionary];
+            }
+            else 
+            { 
+                if(photoArray.count >0 ){
+                    [dictionaryOfPhotos setObject:photoArray forKey: [[NSString stringWithFormat:@"%d",currentHour]stringByAppendingString:@" Hours Ago"]];
+                    photoArray = [[NSMutableArray alloc] init];
+                }
+                currentHour = thisPhotoHour;
+            }
+        }
+        
+        if(photoArray.count >0){
+            [dictionaryOfPhotos setObject:photoArray forKey: [[NSString stringWithFormat:@"%d",currentHour]stringByAppendingString:@" Hours Ago"]];
+            }
+    }
+    return dictionaryOfPhotos;
+}
+
+
+-(NSArray*)sections{
+    if(!sections){
+        
+        //Using Blocks for Sorting
+       sections = [[self.dictionaryOfPhotos allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2){
+            
+             int firstNumber = [ obj1 intValue];
+            int secondInt = [obj2 intValue];
+            if(firstNumber > secondInt)
+                return NSOrderedDescending;
+            else   if(firstNumber < secondInt)
+                return NSOrderedAscending;
+                
+            else
+                return  NSOrderedSame;
+            
+            }
+        ];
+        //sections = [[self.dictionaryOfPhotos allKeys] sortedArrayUsingSelector:@selector(compare:)] ;
+        
+    }
+    return sections;
 }
 
 -(void)putOffIndicator{
@@ -35,7 +96,9 @@
 
 -(NSDictionary*) photoAtIndexPath:(NSIndexPath*) indexPath{
     
-    NSDictionary* thisPhoto = [self.listOfPhotos objectAtIndex:indexPath.row];
+    NSString *key = [self.sections objectAtIndex:indexPath.section];
+    NSMutableArray* thisArrayofSection =  [self.dictionaryOfPhotos objectForKey:key];
+    NSDictionary* thisPhoto = [thisArrayofSection objectAtIndex:indexPath.row];
     return thisPhoto;
 }
 
@@ -77,6 +140,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -120,18 +184,31 @@
 
 #pragma mark - Table view data source
 
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-
     // Return the number of sections.
-    return 1;
+    return  self.sections.count;
 }
+
+//Show the header of each section 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSString* sectionTitle= [self.sections objectAtIndex:section];
+    
+    if( [ [sectionTitle substringToIndex:1] isEqualToString:@"0"]){
+        sectionTitle = @"Right Now";
+    }
+	return sectionTitle;
+}
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 
-    // Return the number of rows in the section.
-    return self.listOfPhotos.count;
+    NSString *key = [self.sections objectAtIndex:section];
+    NSMutableArray * array =  [self.dictionaryOfPhotos objectForKey:key];
+    return array.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -144,15 +221,10 @@
     }
     
     NSDictionary* thisPhoto = [self photoAtIndexPath:indexPath];
-    
     NSDictionary* thisPhotoDescription = [thisPhoto valueForKey:@"description"];
     
     cell.textLabel.text = [self photoTitle:indexPath];
     cell.detailTextLabel.text = [thisPhotoDescription valueForKey:@"_content"];
- 
-
-    // Configure the cell...
-    
     return cell;
 }
 
@@ -199,14 +271,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
-    
+
     PhotoViewController* pvc = [[PhotoViewController alloc] init];
     NSDictionary* thisPhoto = [self photoAtIndexPath:indexPath];
     pvc.photoDictionary = thisPhoto;

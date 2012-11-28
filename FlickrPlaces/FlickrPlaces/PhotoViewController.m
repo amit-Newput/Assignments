@@ -10,7 +10,7 @@
 #import "FlickrFetcher.h"
 #import "AppDelegate.h"
 
-#define recentPhotoCapacity 10
+#define recentPhotoCapacity 7
 @implementation PhotoViewController
 @synthesize photoDictionary;
 
@@ -36,17 +36,6 @@
     
 }
 
--(void) createSpaceInArray:(NSMutableArray *) recentPhotoArray
-{
-    //Remove the first object from array
-    [recentPhotoArray removeObjectAtIndex:0];
-    int arrayCount = recentPhotoArray.count-1;
-    for(int i =0;i<arrayCount;++i){
-        [recentPhotoArray insertObject:[recentPhotoArray objectAtIndex:(i+1)] atIndex:i];
-    }
-    //Remove last object from array as array has moved upwards
-    [recentPhotoArray removeLastObject];
-}
 
 //Check whether we already have an entry in the array for current photo
 //if there is an entry returns the index of that photo in the array
@@ -54,7 +43,6 @@
 {
     int photoIndex = -1;
    NSString* currentPhotoName = [self.photoDictionary valueForKey:@"id"];
-    
     for(int i=0;i<recentPhotoArray.count;++i){
         NSDictionary * thisDictionary = [recentPhotoArray objectAtIndex:i];
         NSString* thisPhotoName = [(NSDictionary*)thisDictionary valueForKey:@"id"];
@@ -69,9 +57,8 @@
 }
 -(void) saveRecentPhoto
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    //[defaults setObject:Ns(self.graphDrawer.originPoint) forKey:@"graphOrigin"];
-    NSMutableArray * recentPhotoArray = [[defaults objectForKey:@"recentPhotoArray"] mutableCopy];
+    
+    NSMutableArray * recentPhotoArray = [[AppDelegate getObjectFromNSUserDefaultForKey:@"recentPhotoArray"] mutableCopy];
     
     if(!recentPhotoArray){
         recentPhotoArray = [NSMutableArray arrayWithCapacity:recentPhotoCapacity];
@@ -80,17 +67,14 @@
     int duplicatePhotoIndex = [self checkForDuplicatePhoto:recentPhotoArray];
     if(duplicatePhotoIndex >=0)
     {//here we have to move the photo to the top.
+        [recentPhotoArray removeObjectAtIndex:duplicatePhotoIndex];
         
     }
-    else 
-    {
-        if(recentPhotoArray.count == recentPhotoCapacity ){
-            [self createSpaceInArray:recentPhotoArray];
+    else if(recentPhotoArray.count == recentPhotoCapacity ){
+                [recentPhotoArray removeObjectAtIndex:recentPhotoArray.count -1];
         }
-        [recentPhotoArray addObject:self.photoDictionary];
-        [defaults setObject:recentPhotoArray forKey:@"recentPhotoArray"];
-        [defaults synchronize];
-    }
+    [recentPhotoArray insertObject:self.photoDictionary atIndex:0];
+    [AppDelegate setObjectToNSUserDefault:recentPhotoArray forKey:@"recentPhotoArray"];
 }
 - (void)didReceiveMemoryWarning
 {

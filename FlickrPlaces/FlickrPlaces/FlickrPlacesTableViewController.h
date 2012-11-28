@@ -11,8 +11,8 @@
 
 @interface FlickrPlacesTableViewController : UITableViewController
 
-
-@property (strong,nonatomic) NSArray * listOfPlaces;
+@property (strong, nonatomic) NSMutableDictionary *dictionaryOfPlaces;
+@property (strong, nonatomic) NSArray* sections;
 
 
 @end

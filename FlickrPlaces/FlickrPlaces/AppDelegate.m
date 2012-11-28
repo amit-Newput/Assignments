@@ -23,27 +23,46 @@
     
     UINavigationController* navPlaces = [[UINavigationController alloc] init ];
     //This is tab 1
-    FlickrPlacesTableViewController* flickrPlaces =[[FlickrPlacesTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    flickrPlaces.title = @"Top Rated";
-     [navPlaces pushViewController:flickrPlaces animated:NO];
+    FlickrPlacesTableViewController* flickrPlacesTVC =[[FlickrPlacesTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    flickrPlacesTVC.title = @"Top Rated";
+    navPlaces.navigationBar.tintColor = [UIColor blackColor];
+    [navPlaces pushViewController:flickrPlacesTVC animated:NO];
     
     //This is tab 2
     UINavigationController* navRecentPhotos = [[UINavigationController alloc] init];
     RecentPhotoTableViewController* recentPhotos =[[RecentPhotoTableViewController alloc] initWithStyle:UITableViewStylePlain];
     
     recentPhotos.title = @"Most Recent";
+    navRecentPhotos.navigationBar.tintColor =[UIColor blackColor];
     [navRecentPhotos pushViewController:recentPhotos animated:NO];
     
     //Add the Tab Bar Controller
     UITabBarController * tbc = [[UITabBarController alloc] init];
     tbc.viewControllers =[NSArray  arrayWithObjects:navPlaces, navRecentPhotos,nil];
-    
     [self.window setRootViewController:tbc];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
 }
++(void)setObjectToNSUserDefault:(id)object  forKey:(NSString*) key
+{
+    NSUserDefaults *defaults= [NSUserDefaults standardUserDefaults];
+    [defaults setObject:object forKey:key ];
+    [defaults synchronize];         
+    
+}
++(id)getObjectFromNSUserDefaultForKey:(NSString*)key
+{
+    NSUserDefaults *defaults= [NSUserDefaults standardUserDefaults];
+    return [defaults objectForKey:key];
+}
+
++(void)clearAllNSUserDefaultValues{
+    
+    [[NSUserDefaults standardUserDefaults] setPersistentDomain:[NSDictionary dictionary] forName:[[NSBundle mainBundle] bundleIdentifier]];
+}
+
 - (void)setNetworkActivityIndicatorVisible:(NSNumber *)setVisible {
     static NSInteger numberOfCallsToSetVisible = 0;
     

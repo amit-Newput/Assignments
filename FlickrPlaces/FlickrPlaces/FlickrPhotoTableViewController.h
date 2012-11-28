@@ -12,5 +12,6 @@
 @interface FlickrPhotoTableViewController : UITableViewController
 
 @property (strong) NSString * placeID;
-@property (strong, nonatomic) NSArray * listOfPhotos;
+@property (strong,nonatomic) NSMutableDictionary* dictionaryOfPhotos;
+@property (strong,nonatomic) NSArray * sections;
 @end

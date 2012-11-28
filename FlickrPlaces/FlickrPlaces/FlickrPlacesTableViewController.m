@@ -12,27 +12,59 @@
 #import "AppDelegate.h"
 
 @implementation FlickrPlacesTableViewController
-@synthesize listOfPlaces;
+@synthesize dictionaryOfPlaces,sections;
 
 
 
--(NSArray *)listOfPlaces
+-(NSArray *)getListOfPlaces
 {
-    if(!listOfPlaces){
         AppDelegate * appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
         //[appDelegate setNetworkActivityIndicatorVisible:YES];
         [appDelegate setNetworkActivityIndicatorVisible:[NSNumber numberWithBool:YES]];
-        //TODO: Use NSDEscriptior for array sorting.
-        listOfPlaces = [[FlickrFetcher topPlaces]sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-            NSString *first = [(NSDictionary*)a valueForKey:@"woe_name"];
-            NSString *second = [(NSDictionary*)b valueForKey:@"woe_name"];
-            return [first compare:second];
-        }];
         
-        //[appDelegate setNetworkActivityIndicatorVisible:NO];
-            [appDelegate performSelector:@selector(setNetworkActivityIndicatorVisible:) withObject:[NSNumber numberWithBool:NO] afterDelay:1.0];
-    }
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"woe_name" ascending:YES];
+        NSArray * listOfPlaces = [[FlickrFetcher topPlaces] sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sortDescriptor, nil]];
+
+        [appDelegate performSelector:@selector(setNetworkActivityIndicatorVisible:) withObject:[NSNumber numberWithBool:NO] afterDelay:1.0];
+    
     return listOfPlaces;
+}
+
+-(NSMutableDictionary*)dictionaryOfPlaces{
+if(!dictionaryOfPlaces)
+{
+    dictionaryOfPlaces = [[NSMutableDictionary alloc] init];
+    NSArray * listOfPlaces = [self getListOfPlaces];
+    int placeCount = listOfPlaces.count;
+    NSMutableArray* placeArray = [[NSMutableArray alloc] init];
+    NSString* currentFirstLetter =@"A";
+    for(int i=0;i<placeCount;++i)
+    {
+        NSDictionary* placeDictionary = [listOfPlaces objectAtIndex:i];
+        NSString* thisFirstLetter= [[[placeDictionary valueForKey:@"woe_name"] substringToIndex:1] uppercaseString] ;
+        if([thisFirstLetter isEqualToString:currentFirstLetter]){
+            [placeArray addObject:placeDictionary];
+        }
+        else 
+        { 
+            if(placeArray.count >0){
+                [dictionaryOfPlaces setObject:placeArray forKey:currentFirstLetter];
+                placeArray = [[NSMutableArray alloc] init];
+            }
+        currentFirstLetter = thisFirstLetter;
+        }
+    }
+}
+    return dictionaryOfPlaces;
+}
+
+
+-(NSArray*)sections{
+    if(!sections){
+        sections =[[self.dictionaryOfPlaces allKeys] sortedArrayUsingSelector:@selector(compare:)];
+        
+    }
+    return sections;
 }
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -59,13 +91,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Top Places";
-    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    UILabel* titleLabel = [[UILabel alloc] init];
+    titleLabel.text =@"Top Rated";
+    titleLabel.backgroundColor = [UIColor clearColor];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.font= [UIFont fontWithName:@"Verdana" size:20];
+    //self.title = @"Top Rated";
+    self.navigationItem.titleView = titleLabel;
+    [self.navigationItem.titleView sizeToFit]; 
+    //self.navigationItem.rightBarButtonItem = self.editButtonItem;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)viewDidUnload
@@ -98,19 +134,16 @@
 
 -(NSDictionary*) placeAtIndexPath:(NSIndexPath*) indexPath{
     
-    NSDictionary* thisPlace = [self.listOfPlaces objectAtIndex:indexPath.row];
+    //NSDictionary* thisPlace = [self.listOfPlaces objectAtIndex:indexPath.row];
+    //return thisPlace;
+    
+    NSMutableArray* thisArrayofSection =  [self.dictionaryOfPlaces objectForKey:[self.sections objectAtIndex:indexPath.section]];
+    NSDictionary* thisPlace = [thisArrayofSection objectAtIndex:indexPath.row];
     return thisPlace;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    // Return YES for supported orientations
-    /*if(self.interfaceOrientation != interfaceOrientation){
-        
-        return YES;
-    }
-    return NO;
-     */
     return YES;
 }
 
@@ -119,15 +152,23 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 1;
+    return  self.sections.count;
+}
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    return self.sections;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Return the number of rows in the section.
-    return self.listOfPlaces.count;
+    NSMutableArray * array =  [self.dictionaryOfPlaces objectForKey:[self.sections objectAtIndex:section]];
+    return array.count;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+	return [self.sections objectAtIndex:section];
+}
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"FlickrPhotos";
@@ -190,14 +231,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
-    
     FlickrPhotoTableViewController* photoTVC = [[FlickrPhotoTableViewController alloc] init];
     NSDictionary* thisPlace = [self placeAtIndexPath:indexPath];
     photoTVC.placeID = [thisPlace valueForKey:@"place_id"];

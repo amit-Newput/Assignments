@@ -10,57 +10,74 @@
 #import "FlickrFetcher.h"
 #import "PhotoViewController.h"
 #import "AppDelegate.h"
+#import "PhotoDescription.h"
 
 @implementation FlickrPhotoTableViewController
 
-@synthesize placeID,dictionaryOfPhotos,sections;
+@synthesize dictionaryOfPhotos,sections,city;
 
--(NSArray*) getListOfPhotos{
-
+-(void) getListOfPhotos{
+/*
     AppDelegate * appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate setNetworkActivityIndicatorVisible:[NSNumber numberWithBool:YES]];
     
     // Using Descriptor for sorting
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"dateupload" ascending:YES];
-    NSArray * listOfPhotos = [[FlickrFetcher photosAtPlace:self.placeID] sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sortDescriptor, nil]];
+    NSArray * listOfPhotos = [[FlickrFetcher photosAtPlace:self.city.cityID] sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sortDescriptor, nil]];
         [appDelegate performSelector:@selector(setNetworkActivityIndicatorVisible:) withObject:[NSNumber numberWithBool:NO] afterDelay:1.0];
+ */
+    
+    dispatch_queue_t callerQueue = dispatch_get_current_queue();
+    dispatch_queue_t downloadQueue = dispatch_queue_create("PhotoListDownloadQueue", NULL);
+    dispatch_async(downloadQueue, ^{
+        NSArray* listOfPhotos = [self.city  getListOfPhotosWithBlock];
 
-    return listOfPhotos;
+   dispatch_async(callerQueue, ^{
+       [self testMethod:listOfPhotos];
+       [self.tableView reloadData];
+      //processListOfPhotos(listOfPhotos);
+      
+  });
+   
+   });
+   
 }
 
+   -(void) testMethod:(NSArray *) listOfPhotos{
+       if(!dictionaryOfPhotos)
+           dictionaryOfPhotos = [[NSMutableDictionary alloc] init];
+       int photoCount = listOfPhotos.count;
+       NSMutableArray* photoArray = [[NSMutableArray alloc] init];
+       int currentHour = 0;
+       for(int i=0;i<photoCount;++i)
+       {
+           NSDictionary* photoDictionary = [listOfPhotos objectAtIndex:i];
+           double timeInterval = [ [photoDictionary valueForKey:@"dateupload"] doubleValue] ;
+           NSDate* thisPhotoDate = [[NSDate alloc] initWithTimeIntervalSince1970:timeInterval];
+           int thisPhotoHour = [thisPhotoDate timeIntervalSinceNow] /3600 ;
+           thisPhotoHour *=-1;
+           
+           if(currentHour == thisPhotoHour){
+               [photoArray addObject:photoDictionary];
+           }
+           else 
+           { 
+               if(photoArray.count >0 ){
+                   [dictionaryOfPhotos setObject:photoArray forKey: [[NSString stringWithFormat:@"%d",currentHour]stringByAppendingString:@" Hours Ago"]];
+                   photoArray = [[NSMutableArray alloc] init];
+               }
+               currentHour = thisPhotoHour;
+           }
+       }
+       
+       if(photoArray.count >0){
+           [dictionaryOfPhotos setObject:photoArray forKey: [[NSString stringWithFormat:@"%d",currentHour]stringByAppendingString:@" Hours Ago"]];
+       }
+       
+   }
+   
+   
 -(NSMutableDictionary*) dictionaryOfPhotos{
-    if(!dictionaryOfPhotos)
-    {
-        dictionaryOfPhotos = [[NSMutableDictionary alloc] init];
-        NSArray * listOfPhotos = [self getListOfPhotos];
-        int photoCount = listOfPhotos.count;
-        NSMutableArray* photoArray = [[NSMutableArray alloc] init];
-        int currentHour = 0;
-        for(int i=0;i<photoCount;++i)
-        {
-            NSDictionary* photoDictionary = [listOfPhotos objectAtIndex:i];
-            double timeInterval = [ [photoDictionary valueForKey:@"dateupload"] doubleValue] ;
-            NSDate* thisPhotoDate = [[NSDate alloc] initWithTimeIntervalSince1970:timeInterval];
-            int thisPhotoHour = [thisPhotoDate timeIntervalSinceNow] /3600 ;
-            thisPhotoHour *=-1;
-            
-            if(currentHour == thisPhotoHour){
-                [photoArray addObject:photoDictionary];
-            }
-            else 
-            { 
-                if(photoArray.count >0 ){
-                    [dictionaryOfPhotos setObject:photoArray forKey: [[NSString stringWithFormat:@"%d",currentHour]stringByAppendingString:@" Hours Ago"]];
-                    photoArray = [[NSMutableArray alloc] init];
-                }
-                currentHour = thisPhotoHour;
-            }
-        }
-        
-        if(photoArray.count >0){
-            [dictionaryOfPhotos setObject:photoArray forKey: [[NSString stringWithFormat:@"%d",currentHour]stringByAppendingString:@" Hours Ago"]];
-            }
-    }
     return dictionaryOfPhotos;
 }
 
@@ -140,6 +157,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self getListOfPhotos];
     //self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
     // Uncomment the following line to preserve selection between presentations.
@@ -274,9 +293,11 @@
 
     PhotoViewController* pvc = [[PhotoViewController alloc] init];
     NSDictionary* thisPhoto = [self photoAtIndexPath:indexPath];
-
-    pvc.photoDictionary = thisPhoto;
-    pvc.title = [self photoTitle:indexPath];
+   PhotoDescription* thisPhotoDescription =  [PhotoDescription PhotoDescriptionWithFlickrData:thisPhoto withCity:self.city inManagedObjectContext:[(AppDelegate*)[[UIApplication sharedApplication] delegate]  managedObjectContext]];
+    thisPhotoDescription.photoTitle = [self photoTitle:indexPath];
+    pvc.photoDescription    = thisPhotoDescription;
+    //pvc.title = [self photoTitle:indexPath];
+    
 	[self.navigationController pushViewController:pvc animated:YES];
     
 }

@@ -44,6 +44,7 @@
         [listOfPhotos addObject:url];
     }
 	// Do any additional setup after loading the view.
+    self.collectionView.dataSource = self;
 }
 
 -(void) processImageDataWithURL: (NSString*) imageURL withBlock:(void (^) (NSString* url,NSData * imageData)) processImage{
@@ -118,7 +119,7 @@
 
 
 - (void)appImageDidLoadWithImageDownloader:(ImageDownloaderUsingNSURL *)objImageDownloader{
-    
+    /*
       PhotoCollectionViewCell* thisCell = (PhotoCollectionViewCell*)[self.collectionView cellForItemAtIndexPath:objImageDownloader.indexPathInCollectionView];
     
     if(objImageDownloader.imageDownloaded){
@@ -130,5 +131,17 @@
     NSLog(@" Cell : %@", thisCell);
     NSLog(@"Spinnner : %@", thisCell.spinner);
     [thisCell.spinner stopAnimating];
+     */
+    
+    
+    if(objImageDownloader.imageDownloaded){
+        [urlPhotoDictionary setObject:objImageDownloader.imageDownloaded forKey:objImageDownloader.imageURL];
+        
+    }
+    //rebind the cell. If image is successfully downloaded then it will add the image to cell. Else it will try again to download the image.
+    [self collectionView:self.collectionView cellForItemAtIndexPath:objImageDownloader.indexPathInCollectionView];
+
+    //Reload the cell at given index path.
+    [self.collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:objImageDownloader.indexPathInCollectionView]];
 }
 @end

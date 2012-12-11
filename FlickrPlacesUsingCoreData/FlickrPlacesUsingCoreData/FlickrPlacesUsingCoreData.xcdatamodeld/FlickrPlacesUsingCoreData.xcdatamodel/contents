@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="878" systemVersion="11E53" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="City" representedClassName="City" syncable="YES">
+        <attribute name="cityDescription" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cityID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cityTitle" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastAccessTime" optional="YES" attributeType="Double" defaultValueString="0" syncable="YES"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PhotoDescription" inverseName="whereTook" inverseEntity="PhotoDescription" syncable="YES"/>
+    </entity>
+    <entity name="PhotoDescription" representedClassName="PhotoDescription" syncable="YES">
+        <attribute name="favorite" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="lastAccessTime" optional="YES" attributeType="Double" defaultValueString="0" syncable="YES"/>
+        <attribute name="photoDescription" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="photoTitle" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="photoURL" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="whereTook" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="photos" inverseEntity="City" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="City" positionX="81" positionY="69" width="128" height="120"/>
+        <element name="PhotoDescription" positionX="90" positionY="378" width="128" height="105"/>
+    </elements>
+</model>

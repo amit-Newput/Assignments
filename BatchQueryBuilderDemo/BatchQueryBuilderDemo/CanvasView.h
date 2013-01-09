@@ -8,6 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+@class CanvasView;
+
+@protocol CanvasViewDelegate <NSObject>
+
+@optional
+
+-(void)canvasView:(CanvasView *)canvasView lineSelectedAtIndex:(NSInteger)index;
+
+@end
+
 @interface CanvasView : UIScrollView
+
+
+@property (strong) NSArray *lines;
+@property (strong) id <CanvasViewDelegate> target;
 
 @end

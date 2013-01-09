@@ -23,6 +23,7 @@
 		FB9ABA5D169C35F600CE14F4 /* Facets.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA5B169C35F600CE14F4 /* Facets.xib */; };
 		FB9ABA61169C362100CE14F4 /* Values.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA5F169C362000CE14F4 /* Values.m */; };
 		FB9ABA62169C362100CE14F4 /* Values.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA60169C362000CE14F4 /* Values.xib */; };
+		FBB1BBE2169D620500AFFAE7 /* LineVO.m in Sources */ = {isa = PBXBuildFile; fileRef = FBB1BBE1169D620500AFFAE7 /* LineVO.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,8 @@
 		FB9ABA5E169C362000CE14F4 /* Values.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Values.h; sourceTree = "<group>"; };
 		FB9ABA5F169C362000CE14F4 /* Values.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Values.m; sourceTree = "<group>"; };
 		FB9ABA60169C362000CE14F4 /* Values.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Values.xib; sourceTree = "<group>"; };
+		FBB1BBE0169D620500AFFAE7 /* LineVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineVO.h; sourceTree = "<group>"; };
+		FBB1BBE1169D620500AFFAE7 /* LineVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineVO.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +72,8 @@
 		FB9ABA24169C247200CE14F4 = {
 			isa = PBXGroup;
 			children = (
+				FBB1BBE0169D620500AFFAE7 /* LineVO.h */,
+				FBB1BBE1169D620500AFFAE7 /* LineVO.m */,
 				FB9ABA39169C247200CE14F4 /* BatchQueryBuilderDemo */,
 				FB9ABA32169C247200CE14F4 /* Frameworks */,
 				FB9ABA30169C247200CE14F4 /* Products */,
@@ -203,6 +208,7 @@
 				FB9ABA58169C32C000CE14F4 /* CanvasView.m in Sources */,
 				FB9ABA5C169C35F600CE14F4 /* Facets.m in Sources */,
 				FB9ABA61169C362100CE14F4 /* Values.m in Sources */,
+				FBB1BBE2169D620500AFFAE7 /* LineVO.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +329,7 @@
 				FB9ABA55169C247200CE14F4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

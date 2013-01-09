@@ -17,7 +17,7 @@
 
 @implementation Facets
 
-@synthesize sources,isDetailedViewVisible;
+@synthesize sources;
 @synthesize selectedValueTable;
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -37,7 +37,12 @@
     }
     return self;
 }
-
+-(BOOL)isDetailedViewVisible{
+    if ([self.navigationController.visibleViewController isKindOfClass:[self class]]) {
+        return NO;
+    }
+    return YES;
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -51,12 +56,11 @@
 }
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    isDetailedViewVisible = NO;
-    
+        
 }
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    isDetailedViewVisible = YES;
+    
 }
 - (void)didReceiveMemoryWarning
 {
@@ -146,7 +150,9 @@
      // ...
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:self.selectedValueTable animated:YES];
+
     
 }
+
 
 @end

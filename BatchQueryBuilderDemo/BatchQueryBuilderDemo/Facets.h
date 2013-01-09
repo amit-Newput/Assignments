@@ -12,13 +12,13 @@
 @interface Facets : UITableViewController
 {
     NSMutableDictionary *sources;
-    BOOL isDetailedViewVisible;
+
 }
 
 @property (strong)  NSMutableDictionary *sources;
 - (id)initWithSources:(NSMutableDictionary *) paramSources;
 @property  (strong) NSArray *facetKeys;
-@property BOOL isDetailedViewVisible;
+-(BOOL)isDetailedViewVisible;
 @property (strong) Values *selectedValueTable;
 @end
 

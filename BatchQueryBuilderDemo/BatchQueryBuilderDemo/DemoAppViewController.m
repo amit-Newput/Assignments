@@ -147,11 +147,11 @@
              sourceValueTable.view.frame = CGRectMake(0, 0,200, 200);
              
              UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:sourceValueTable];
-             [canvasViewTableArray addObject:sourceValueTable];
+             [canvasViewTableArray addObject:sourceValueTableNav];
              
-             sourceValueTableNav.view.frame =sourceValueTable.view.frame;
+             sourceValueTableNav.view.frame =CGRectMake(0, 0,200, 200);
      
-             [self.canvasBackView addSubview:sourceValueTableNav.view];
+             [self.canvasView addSubview:sourceValueTableNav.view];
              
          }
          

@@ -8,6 +8,8 @@
 
 #import "DemoAppViewController.h"
 #import "canvasView.h"
+#import "ConnectionVO.h"
+
 #define BaseTagForCanvasTable 1000
 
 @interface DemoAppViewController (){
@@ -20,6 +22,7 @@
 -(void) handlePanningCanvasTable:(UIPanGestureRecognizer *) gesture;
 -(void) clearDraggingObjects;
 @property (strong) NSMutableDictionary *tagByTableNameMapping;
+@property (strong, nonatomic) NSMutableArray *connectionVOs;
 @end
 
 @implementation DemoAppViewController
@@ -146,6 +149,17 @@
 
 -(void)stopCanvasDragging:(UIPanGestureRecognizer *)gesture{
     highlightedCell.highlighted = NO;
+    
+    ConnectionVO *connectionVo = [[ConnectionVO alloc] init];
+    connectionVo.cell1 = initialDraggedCell;
+    connectionVo.cell2 = highlightedCell;
+    //Later following two fields will be replaced by VO's
+    connectionVo.value1 = initialDraggedCell.textLabel.text;
+    connectionVo.value2 = highlightedCell.textLabel.text;
+    
+    
+    self.connectionVOs = [NSMutableArray  arrayWithObjects:connectionVo, nil];
+    [self redrawCanvasView];
     [self clearDraggingObjects];
     
 }
@@ -205,9 +219,6 @@
              }
              
          }
-         
-     
-     
      }
     
     //remove dragged cell from super view, we don't need it anymore
@@ -233,6 +244,7 @@
 			break;
 		case UIGestureRecognizerStateChanged:
 			[self dragCanvasObject:gesture];
+            [self redrawCanvasView];
 			break;
 		case UIGestureRecognizerStateEnded:
 			[self stopCanvasDragging:gesture];
@@ -261,6 +273,7 @@
 	draggedCellData = nil;
     draggedTable = nil;
     highlightedCell =nil;
+    initialDraggedCell = nil;
 }
 -(void) dragCanvasObject:(UIPanGestureRecognizer *)gesture{
     if(draggedTableNav){
@@ -386,6 +399,7 @@
         NSIndexPath *indexPath = [tableView indexPathForRowAtPoint:cellPoint];
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         if (cell != nil) {
+            initialDraggedCell = cell;
             CGPoint origin = cell.frame.origin;
             CGPoint locInMainView = [gesture locationInView:self.view];
             //this cell should be placed at point on which dragging initiated
@@ -425,5 +439,16 @@
     return YES;
 }
 
+
+-(void) redrawCanvasView{
+    NSMutableArray * lines = [[ NSMutableArray alloc] init];
+    for (ConnectionVO *objConnectionVO in self.connectionVOs) {
+        [lines addObject:[objConnectionVO getLineVOForView:self.canvasView]];
+    }
+    
+    self.canvasView.lines = [NSArray arrayWithArray:lines];
+    
+    
+}
 
 @end

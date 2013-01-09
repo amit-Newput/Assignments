@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		61D9266F169DA516004A856D /* ConnectionVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9266E169DA516004A856D /* ConnectionVO.m */; };
 		FB9ABA34169C247200CE14F4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA33169C247200CE14F4 /* UIKit.framework */; };
 		FB9ABA36169C247200CE14F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA35169C247200CE14F4 /* Foundation.framework */; };
 		FB9ABA38169C247200CE14F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA37169C247200CE14F4 /* CoreGraphics.framework */; };
@@ -27,6 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		61D9266D169DA516004A856D /* ConnectionVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionVO.h; sourceTree = "<group>"; };
+		61D9266E169DA516004A856D /* ConnectionVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionVO.m; sourceTree = "<group>"; };
 		FB9ABA2F169C247200CE14F4 /* BatchQueryBuilderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatchQueryBuilderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB9ABA33169C247200CE14F4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FB9ABA35169C247200CE14F4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -72,6 +75,8 @@
 		FB9ABA24169C247200CE14F4 = {
 			isa = PBXGroup;
 			children = (
+				61D9266D169DA516004A856D /* ConnectionVO.h */,
+				61D9266E169DA516004A856D /* ConnectionVO.m */,
 				FBB1BBE0169D620500AFFAE7 /* LineVO.h */,
 				FBB1BBE1169D620500AFFAE7 /* LineVO.m */,
 				FB9ABA39169C247200CE14F4 /* BatchQueryBuilderDemo */,
@@ -209,6 +214,7 @@
 				FB9ABA5C169C35F600CE14F4 /* Facets.m in Sources */,
 				FB9ABA61169C362100CE14F4 /* Values.m in Sources */,
 				FBB1BBE2169D620500AFFAE7 /* LineVO.m in Sources */,
+				61D9266F169DA516004A856D /* ConnectionVO.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

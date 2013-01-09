@@ -86,6 +86,8 @@
         [mutablePaths addObject:path];
     }
     pathArray = [NSArray arrayWithArray:mutablePaths];
+    
+    [self setNeedsDisplay];
 }
 -(NSArray *)lines{
     return lines;

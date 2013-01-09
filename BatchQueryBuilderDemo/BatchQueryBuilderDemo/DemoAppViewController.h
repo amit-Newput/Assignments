@@ -20,6 +20,7 @@
     UITableViewController *draggedTable;
     UINavigationController *draggedTableNav;
     UITableViewCell *draggedCell;
+    UITableViewCell *initialDraggedCell;
     UITableViewCell *highlightedCell;
     NSMutableDictionary *canvasViewTablesDic;
 }

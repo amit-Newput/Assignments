@@ -18,8 +18,10 @@
     UINavigationController *sourcesTableNav;
     NSString *draggedCellData;
     UITableViewController *draggedTable;
+    UINavigationController *draggedTableNav;
     UITableViewCell *draggedCell;
-    NSMutableArray *canvasViewTableArray;
+    UITableViewCell *highlightedCell;
+    NSMutableDictionary *canvasViewTablesDic;
 }
 
 @property (strong) IBOutlet UIView *canvasBackView;
@@ -28,5 +30,5 @@
 @property (strong) IBOutlet  Facets *sourcesTable;
 @property (strong) UINavigationController *sourcesTableNav;
 @property (strong) CanvasView *canvasView ;
-@property (strong)  NSMutableArray *canvasViewTableArray;
+@property (strong) NSMutableDictionary *canvasViewTablesDic;
 @end

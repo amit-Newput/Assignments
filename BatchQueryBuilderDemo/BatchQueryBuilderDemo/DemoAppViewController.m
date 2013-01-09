@@ -8,12 +8,18 @@
 
 #import "DemoAppViewController.h"
 #import "canvasView.h"
+#define BaseTagForCanvasTable 1000
 
-@interface DemoAppViewController ()
+@interface DemoAppViewController (){
+    int numberOfTablesExistInCanvasView;
+}
 - (void)handleFacetPanning:(UIPanGestureRecognizer *)gesture;
 - (void)validateAndStartDragging:(UIPanGestureRecognizer *)gesture;
 - (void) stopDragging:(UIPanGestureRecognizer *)gesture;
 - (void) dragObject:(UIPanGestureRecognizer *)gesture;
+-(void) handlePanningCanvasTable:(UIPanGestureRecognizer *) gesture;
+-(void) clearDraggingObjects;
+@property (strong) NSMutableDictionary *tagByTableNameMapping;
 @end
 
 @implementation DemoAppViewController
@@ -22,7 +28,8 @@
 @synthesize sourcesTableBackView;
 @synthesize sources,sourcesTable,sourcesTableNav;
 @synthesize canvasView;
-@synthesize canvasViewTableArray;
+@synthesize canvasViewTablesDic;
+@synthesize tagByTableNameMapping;
 
 - (void)viewDidLoad
 {
@@ -43,13 +50,19 @@
     [self.sourcesTableBackView addSubview:sourcesTableNav.view];
     
     canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(0, 0, self.canvasBackView.frame.size.width, self.canvasBackView.frame.size.height)];
+    
+    canvasView.contentSize = self.canvasView.frame.size;
     canvasView.backgroundColor = [UIColor blueColor];
+    canvasView.showsHorizontalScrollIndicator = canvasView.showsVerticalScrollIndicator = YES;
+    
     [self.canvasBackView addSubview:canvasView];
     
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFacetPanning:)];
     [self.sourcesTableBackView addGestureRecognizer:panGesture];
     
-    canvasViewTableArray = [[NSMutableArray alloc] init];
+    canvasViewTablesDic = [[NSMutableDictionary alloc] init];
+    tagByTableNameMapping = [[NSMutableDictionary alloc] init];
+    numberOfTablesExistInCanvasView = 0;
     
 }
 //code related to dragging Facets
@@ -117,20 +130,38 @@
         if (draggedCellData != nil) {
             draggedCellData = nil;
         }
-        draggedCellData = [sourcesTable.facetKeys objectAtIndex:indexPath.row];
+        if([draggedTable isKindOfClass:[Facets class]]){
+            // If dragged conent is table name then set the dragged cell data as table name.
+            draggedCellData = [sourcesTable.facetKeys objectAtIndex:indexPath.row];
+            
+        }
+        else{
+            // If dragged content is Field name then set the dragged cell data as field name
+            draggedCellData = cell.textLabel.text;
+        }
+
     }
     
 }
 
+-(void)stopCanvasDragging:(UIPanGestureRecognizer *)gesture{
+    highlightedCell.highlighted = NO;
+    [self clearDraggingObjects];
+    
+}
+
+
 - (void) stopDragging:(UIPanGestureRecognizer *)gesture{
      if(draggedCell != nil && draggedCellData != nil){
         BOOL droppedAtCorrectTarget = NO;
-
+         
          CGPoint droppedAtPoint = [gesture locationInView:self.canvasBackView];
          if ([self.canvasBackView pointInside:droppedAtPoint withEvent:nil]) {
              droppedAtCorrectTarget = YES;
              NSMutableArray  *valueArray = nil;
              NSString *tableName = nil;
+             
+             // Determine whether user has dragged the table or a field of the table.
              if([draggedTable isKindOfClass:[Facets class]]){
                  valueArray = [NSMutableArray arrayWithArray:[self.sources objectForKey:draggedCellData]];
                  tableName = draggedCellData;
@@ -142,16 +173,36 @@
                  tableName = valueTable.tableName;
                  
              }
+             //Determine whether to create a new table on canvas or not.
              
-             Values *sourceValueTable = [[Values alloc] initWithValues:valueArray withTableName:tableName];
-             sourceValueTable.view.frame = CGRectMake(0, 0,200, 200);
-             
-             UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:sourceValueTable];
-             [canvasViewTableArray addObject:sourceValueTableNav];
-             
-             sourceValueTableNav.view.frame =CGRectMake(0, 0,200, 200);
-     
-             [self.canvasView addSubview:sourceValueTableNav.view];
+             if( ![canvasViewTablesDic objectForKey:tableName]){
+                 Values *sourceValueTable = [[Values alloc] initWithValues:valueArray withTableName:tableName];
+                 sourceValueTable.view.frame = CGRectMake(0, 0,200, 200);
+                 
+                 
+                 UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:sourceValueTable];
+                 
+                 sourceValueTableNav.view.frame =CGRectMake(droppedAtPoint.x, droppedAtPoint.y,200, 200);
+                 
+                 UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanningCanvasTable:)];
+                 UITapGestureRecognizer *tapGesture =[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTappingCanvasTable:)];
+                 int tag = BaseTagForCanvasTable + numberOfTablesExistInCanvasView ;
+                 sourceValueTableNav.view.tag = tag;
+                 [sourceValueTableNav.view addGestureRecognizer:panGesture];
+                 sourceValueTableNav.navigationBar.tag =tag;
+                 [sourceValueTableNav.navigationBar addGestureRecognizer:tapGesture];
+                 [self.canvasView addSubview:sourceValueTableNav.view];
+                 [canvasViewTablesDic setObject:sourceValueTableNav forKey:tableName];
+                 [tagByTableNameMapping setObject:tableName forKey:[NSString stringWithFormat:@"%d",tag]];
+                 numberOfTablesExistInCanvasView++;
+             }
+             if([draggedTable isKindOfClass:[Values class]]){
+              //Get the value table to be updated
+                 Values *existingValueTable = (Values *)[[canvasViewTablesDic objectForKey:tableName] topViewController];
+                 // mark dragged field as checked in the table
+                 [existingValueTable valueSelected:draggedCellData];
+                 
+             }
              
          }
          
@@ -160,10 +211,198 @@
      }
     
     //remove dragged cell from super view, we don't need it anymore
+	[self clearDraggingObjects];
+    
+}
+
+-(void) handleTappingCanvasTable:(UITapGestureRecognizer *)gesture{
+    //return;
+    UINavigationController *tableNav = [canvasViewTablesDic objectForKey:[tagByTableNameMapping objectForKey:[NSString stringWithFormat:@"%d",gesture.view.tag]]];
+    [tableNav.view.superview bringSubviewToFront:tableNav.view];
+}
+
+-(void) handlePanningCanvasTable:(UIPanGestureRecognizer *) gesture{
+    
+   // NSLog(@" Table panning View : %@ : %d", gesture.view , gesture.view.tag);
+    
+    //return;
+    switch (gesture.state) {
+        case UIGestureRecognizerStateBegan:
+			// Do Nothing
+            [self identifyDraggedView:gesture];
+			break;
+		case UIGestureRecognizerStateChanged:
+			[self dragCanvasObject:gesture];
+			break;
+		case UIGestureRecognizerStateEnded:
+			[self stopCanvasDragging:gesture];
+			break;
+        case UIGestureRecognizerStatePossible:
+            NSLog(@"UIGestureRecognizerStatePossible");
+            break;
+        case UIGestureRecognizerStateFailed:
+            NSLog(@"UIGestureRecognizerStateFailed");
+            [self clearDraggingObjects];
+            break;
+        case UIGestureRecognizerStateCancelled:{
+            NSLog(@"UIGestureRecognizerStateCancelled");
+            [self clearDraggingObjects];
+        }
+            break;
+    }
+    
+    
+}
+-(void) clearDraggingObjects{
+    draggedTableNav = nil;
+    //remove dragged cell from super view, we don't need it anymore
 	[draggedCell removeFromSuperview];
 	draggedCell = nil;
 	draggedCellData = nil;
     draggedTable = nil;
+    highlightedCell =nil;
+}
+-(void) dragCanvasObject:(UIPanGestureRecognizer *)gesture{
+    if(draggedTableNav){
+          CGPoint translation = [gesture translationInView:[draggedTableNav.view superview]];
+        [UIView animateWithDuration:0.05 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+             [draggedTableNav.view setCenter:CGPointMake(draggedTableNav.view.center.x+translation.x, draggedTableNav.view.center.y+translation.y)];
+        } completion:^(BOOL finished){
+            // if you want to do something once the animation finishes, put it here
+        }];
+      
+       
+		[gesture setTranslation:CGPointZero inView:[draggedTableNav.view superview]];
+        
+        CGPoint draggedViewExtremePoint = CGPointMake(draggedTableNav.view.frame.origin.x + draggedTableNav.view.frame.size.width, draggedTableNav.view.frame.origin.y + draggedTableNav.view.frame.size.height);
+        
+        //This translation is required for this point containment check in Canvas View
+        //CGPoint translatedExtremePoint = [self.canvasBackView convertPoint:draggedViewExtremePoint fromView:self.canvasView];
+        [self updateContentSizeForCanvasView:draggedViewExtremePoint];
+
+    }else if(draggedCell){
+        
+        CGPoint translation = [gesture translationInView:[draggedCell superview]];
+        [UIView animateWithDuration:0.05 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            [draggedCell setCenter:CGPointMake(draggedCell.center.x+translation.x, draggedCell.center.y+translation.y)];
+        } completion:^(BOOL finished){
+            // if you want to do something once the animation finishes, put it here
+        }];
+        
+        
+		[gesture setTranslation:CGPointZero inView:[draggedCell superview]];
+        
+        CGPoint point = draggedCell.frame.origin;
+        [self highlightOtherTableCellForJoinIfRequired:point];
+        
+        
+        CGPoint draggedViewExtremePoint = CGPointMake(draggedCell.frame.origin.x + draggedCell.frame.size.width, draggedCell.frame.origin.y + draggedCell.frame.size.height);
+        
+        //This translation is required for this point containment check in Canvas View
+        CGPoint translatedExtremePoint = [self.canvasView convertPoint:draggedViewExtremePoint fromView:self.view];
+        [self updateContentSizeForCanvasView:translatedExtremePoint];
+        
+    }
+    
+    
+    
+    
+}
+
+-(void)updateContentSizeForCanvasView : (CGPoint) translatedExtremePoint{
+    
+    //NSLog(@"Translated Extreme Point  x = %f , y=%f", translatedExtremePoint.x,translatedExtremePoint.y);
+    
+    if(![self.canvasView pointInside:translatedExtremePoint withEvent:nil]){
+          CGPoint canvasExtremePoint = CGPointMake(canvasView.frame.origin.x +  canvasView.contentSize.width, canvasView.frame.origin.y + canvasView.contentSize.height);
+       // NSLog(@"canvasView Extreme Point  x = %f , y=%f", canvasExtremePoint.x,canvasExtremePoint.y);
+       // NSLog(@" canvas content size width: %f  height: %f",canvasView.contentSize.width,canvasView.contentSize.height);
+        float newWidth = canvasExtremePoint.x;
+        float newHeight = canvasExtremePoint.y;
+        float differenceWidth =0.0,differenceHeight=0.0;
+        if(canvasExtremePoint.x <= translatedExtremePoint.x){
+             differenceWidth = translatedExtremePoint.x -canvasExtremePoint.x ;
+            newWidth = canvasExtremePoint.x + differenceWidth +5;
+        }
+        
+        if(canvasExtremePoint.y <= translatedExtremePoint.y){
+             differenceHeight = translatedExtremePoint.y-canvasExtremePoint.y;
+            newHeight = canvasExtremePoint.y + differenceHeight +5;
+        }
+        
+        [self.canvasView setContentSize:CGSizeMake(newWidth, newHeight)];
+        //CGPoint contentOffSetPoint = CGPointMake(-200, 10);
+        //CGPoint contentOffSetPoint =translatedExtremePoint;
+       // NSLog(@" Difference in Height = %f , Width = %f", differenceWidth, differenceHeight);
+        //NSLog(@" content OffSet Point is  x = %f , y=%f", newWidth,newHeight);
+        //[self.canvasView setContentOffset:contentOffSetPoint animated:YES];
+    }
+          
+          
+     
+}
+
+-(void)highlightOtherTableCellForJoinIfRequired:(CGPoint) point
+{
+    //Unhighlight the last cell highlighted
+    highlightedCell.highlighted = NO;
+    for (NSString *key in self.canvasViewTablesDic) {
+        UINavigationController *tableNav = [self.canvasViewTablesDic objectForKey:key];
+        CGPoint translatedPoint = [tableNav.topViewController.view convertPoint:point fromView:self.view];
+        UITableView*  tableView = (UITableView *)tableNav.topViewController.view ;
+        //User is trying to join with one of the row in this table
+        if([tableNav.topViewController.view pointInside:translatedPoint withEvent:nil]){
+            
+            NSIndexPath *indexPath = [tableView indexPathForRowAtPoint:translatedPoint];
+            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            
+            cell.highlighted = YES;
+            highlightedCell = cell;
+            break;
+        }
+        
+    }
+}
+
+-(void)identifyDraggedView:(UIPanGestureRecognizer *)gesture{
+    
+    UINavigationController *tableNav = [canvasViewTablesDic objectForKey:[tagByTableNameMapping objectForKey:[NSString stringWithFormat:@"%d",gesture.view.tag]]];
+    CGPoint startingPoint = [gesture locationInView:tableNav.view];
+    
+    if([tableNav.navigationBar pointInside:startingPoint withEvent:nil]){
+        NSLog(@"Coming inside navigation bar");
+        draggedTableNav = tableNav;
+        
+        //draggedTableNav.view.frame = CGRectMake(draggedTableNav.view.frame.origin.x+5, draggedTableNav.view.frame.origin.y +5, draggedTableNav.view.frame.size.width, draggedTableNav.view.frame.size.height);
+        [draggedTableNav.view.superview bringSubviewToFront:draggedTableNav.view];
+        
+    }else if([tableNav.topViewController.view pointInside:startingPoint withEvent:nil]){
+        NSLog(@"Coming inside table cell %@", [tableNav topViewController].view);
+        
+        UITableView * tableView = (UITableView *)[tableNav topViewController].view;
+        CGPoint cellPoint = [gesture locationInView:tableView];
+         NSLog(@"cell point %f  : % f", cellPoint.x,cellPoint.y);
+        
+        NSIndexPath *indexPath = [tableView indexPathForRowAtPoint:cellPoint];
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        if (cell != nil) {
+            CGPoint origin = cell.frame.origin;
+            CGPoint locInMainView = [gesture locationInView:self.view];
+            //this cell should be placed at point on which dragging initiated
+            origin.x = locInMainView.x - 5;
+            origin.y = locInMainView.y - 5;
+            [self initDraggedFacetWithCell:cell atPoint:origin];
+            cell.highlighted = NO;
+            if (draggedCellData != nil) {
+                draggedCellData = nil;
+            }
+        
+            // If dragged content is Field name then set the dragged cell data as field name
+            draggedCellData = cell.textLabel.text;
+        }
+         
+        
+    }
     
 }
 - (void) dragObject:(UIPanGestureRecognizer *)gesture{
@@ -179,6 +418,11 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+
+-(BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation   {
+    return YES;
 }
 
 

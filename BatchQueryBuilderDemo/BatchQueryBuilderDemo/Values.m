@@ -10,11 +10,14 @@
 
 @interface Values ()
 
+//  field name as key and selected or not as value (BOOL YES NO)
+@property (strong, nonatomic) NSMutableDictionary *selectedValues;
 @end
 
 @implementation Values
 
 @synthesize values,tableName;
+@synthesize selectedValues;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -39,7 +42,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    self.selectedValues = [[NSMutableDictionary alloc] init];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -47,6 +50,12 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+
+-(void) valueSelected: (NSString*)valueName{
+    [self.selectedValues setObject:@"YES" forKey:valueName];
+    [self.tableView reloadData];
+    
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -77,10 +86,22 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     cell.textLabel.text = [self.values objectAtIndex:indexPath.row];
+    
+    //NSLog(@" Field Selected:%@", [self.selectedValues objectForKey: cell.textLabel.text]);
+    BOOL isSelected =[[self.selectedValues objectForKey: cell.textLabel.text] boolValue];
+    
+    //Add the check mark to show the field is selected or not
+    if(isSelected){
+        cell.accessoryType = UITableViewCellAccessoryCheckmark ;
+    }
+    else{
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
     // Configure the cell...
     
     return cell;
 }
+
 
 /*
 // Override to support conditional editing of the table view.
@@ -125,6 +146,19 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UITableViewCell *cell  = [self.tableView cellForRowAtIndexPath:indexPath];
+    
+    if(cell.accessoryType == UITableViewCellAccessoryCheckmark){
+        cell.accessoryType = UITableViewCellAccessoryNone;
+       [self.selectedValues setObject:@"NO" forKey:cell.textLabel.text];
+    }
+    else{
+      cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    [self.selectedValues setObject:@"YES" forKey:cell.textLabel.text];
+
+    }
+    [self.navigationController.view.superview bringSubviewToFront:self.navigationController.view];
+    
     // Navigation logic may go here. Create and push another view controller.
     /*
      <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
@@ -135,9 +169,9 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    NSLog(@"Coming in scroll view");
+    //NSLog(@"Coming in scroll view");
 }
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-    NSLog(@"Coming in scroll view scrollViewDidEndDragging");
+    //NSLog(@"Coming in scroll view scrollViewDidEndDragging");
 }
 @end

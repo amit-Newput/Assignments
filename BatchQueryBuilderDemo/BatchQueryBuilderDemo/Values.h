@@ -16,4 +16,5 @@
 @property (strong) NSMutableArray *values;
 @property (strong) NSString *tableName;
 - (id)initWithValues:(NSMutableArray *)paramValues withTableName:(NSString *)paramTableName;
+-(void) valueSelected: (NSString*)valueName;
 @end

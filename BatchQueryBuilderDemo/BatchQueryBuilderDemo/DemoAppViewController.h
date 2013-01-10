@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "Facets.h"
 #import "CanvasView.h"
+#import "Values.h"
 
-@interface DemoAppViewController : UIViewController{
+@interface DemoAppViewController : UIViewController<ValuesDelegate>{
     IBOutlet UIView *canvasBackView;
     IBOutlet UIView *sourcesTableBackView;
     NSMutableDictionary *sources;

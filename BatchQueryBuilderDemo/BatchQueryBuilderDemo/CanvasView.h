@@ -18,7 +18,7 @@
 
 @end
 
-@interface CanvasView : UIScrollView
+@interface CanvasView : UIScrollView<UIScrollViewDelegate>
 
 
 @property (strong) NSArray *lines;

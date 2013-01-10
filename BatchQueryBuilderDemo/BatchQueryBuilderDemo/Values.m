@@ -81,6 +81,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
+    CellIdentifier = [NSString stringWithFormat:@"Cell%d%d",indexPath.section,indexPath.row];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
@@ -98,7 +99,7 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     // Configure the cell...
-    
+    cell.contentView.alpha = .5;
     return cell;
 }
 
@@ -170,8 +171,12 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     //NSLog(@"Coming in scroll view");
+    if ([self.delegate respondsToSelector:@selector(valuesTableDidScroll:)]) {
+        [self.delegate valuesTableDidScroll:self];
+    }
 }
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     //NSLog(@"Coming in scroll view scrollViewDidEndDragging");
 }
+
 @end

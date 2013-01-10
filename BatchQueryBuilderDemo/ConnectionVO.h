@@ -10,9 +10,13 @@
 #import "LineVO.h"
 
 @interface ConnectionVO : NSObject
+
+@property BOOL isTemporary;
+
 @property (strong, nonatomic) UIView * cell1;
 @property (strong, nonatomic) UIView * cell2;
 @property (strong, nonatomic) NSString * value1;
 @property (strong, nonatomic) NSString * value2;
 -(LineVO *) getLineVOForView:(UIView *)view;
+-(BOOL)isEqualToConnection:(ConnectionVO *)connection;
 @end

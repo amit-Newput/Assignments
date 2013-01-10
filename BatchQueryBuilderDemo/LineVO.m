@@ -58,13 +58,13 @@
         if (returnStartPoint)
             resultPoint = self.startPoint2;
         else
-            resultPoint = self.endPoint2;
+            resultPoint = self.endPoint1;
         NSLog(@">>>3");
     }else{
         if (returnStartPoint)
             resultPoint = self.startPoint2;
         else
-            resultPoint = self.endPoint1;
+            resultPoint = self.endPoint2;
         NSLog(@">>>4");
     }
     return resultPoint;

@@ -40,7 +40,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     sources = [[NSMutableDictionary alloc] init];
-    NSArray *table1 = [[NSArray alloc] initWithObjects:@"Field11",@"Field12",@"Field13",@"Field14",@"Field15",@"Field16", nil];
+    NSArray *table1 = [[NSArray alloc] initWithObjects:@"Field11",@"Field12",@"Field13",@"Field14",@"Field15",@"Field16",@"Field17",@"Field18",@"Field19",@"Field110",@"Field111",@"Field112", nil];
     [sources setObject:table1 forKey:@"table1"];
     NSArray *table2 = [[NSArray alloc] initWithObjects:@"Field21",@"Field22",@"Field23",@"Field24",@"Field25",@"Field26", nil];
     [sources setObject:table2 forKey:@"table2"];
@@ -149,16 +149,20 @@
 
 -(void)stopCanvasDragging:(UIPanGestureRecognizer *)gesture{
     highlightedCell.highlighted = NO;
-    
-    ConnectionVO *connectionVo = [[ConnectionVO alloc] init];
-    connectionVo.cell1 = initialDraggedCell;
-    connectionVo.cell2 = highlightedCell;
-    //Later following two fields will be replaced by VO's
-    connectionVo.value1 = initialDraggedCell.textLabel.text;
-    connectionVo.value2 = highlightedCell.textLabel.text;
-    
-    
-    self.connectionVOs = [NSMutableArray  arrayWithObjects:connectionVo, nil];
+    if (draggedCell) {
+        ConnectionVO *connectionVo = [[ConnectionVO alloc] init];
+        connectionVo.cell1 = initialDraggedCell;
+        connectionVo.cell2 = highlightedCell;
+        //Later following two fields will be replaced by VO's
+        connectionVo.value1 = initialDraggedCell.textLabel.text;
+        connectionVo.value2 = highlightedCell.textLabel.text;
+        
+        if (!self.connectionVOs) {
+            self.connectionVOs = [NSMutableArray array];
+        }
+        [self addConnection:connectionVo];
+
+    }
     [self redrawCanvasView];
     [self clearDraggingObjects];
     
@@ -191,6 +195,7 @@
              
              if( ![canvasViewTablesDic objectForKey:tableName]){
                  Values *sourceValueTable = [[Values alloc] initWithValues:valueArray withTableName:tableName];
+                 sourceValueTable.delegate = self;
                  sourceValueTable.view.frame = CGRectMake(0, 0,200, 200);
                  
                  
@@ -202,10 +207,12 @@
                  UITapGestureRecognizer *tapGesture =[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTappingCanvasTable:)];
                  int tag = BaseTagForCanvasTable + numberOfTablesExistInCanvasView ;
                  sourceValueTableNav.view.tag = tag;
+                 sourcesTableNav.view.alpha = .5;
                  [sourceValueTableNav.view addGestureRecognizer:panGesture];
                  sourceValueTableNav.navigationBar.tag =tag;
                  [sourceValueTableNav.navigationBar addGestureRecognizer:tapGesture];
                  [self.canvasView addSubview:sourceValueTableNav.view];
+                 
                  [canvasViewTablesDic setObject:sourceValueTableNav forKey:tableName];
                  [tagByTableNameMapping setObject:tableName forKey:[NSString stringWithFormat:@"%d",tag]];
                  numberOfTablesExistInCanvasView++;
@@ -244,7 +251,7 @@
 			break;
 		case UIGestureRecognizerStateChanged:
 			[self dragCanvasObject:gesture];
-            [self redrawCanvasView];
+            
 			break;
 		case UIGestureRecognizerStateEnded:
 			[self stopCanvasDragging:gesture];
@@ -260,9 +267,10 @@
             NSLog(@"UIGestureRecognizerStateCancelled");
             [self clearDraggingObjects];
         }
+            
             break;
     }
-    
+    [self redrawCanvasView];
     
 }
 -(void) clearDraggingObjects{
@@ -451,4 +459,30 @@
     
 }
 
+-(void)valuesTableDidScroll:(Values *)tableVC{
+    [self redrawCanvasView];
+    NSLog(@"%@",NSStringFromCGPoint([self.canvasView convertPoint:tableVC.tableView.frame.origin fromView:tableVC.tableView.superview]));
+    
+    
+}
+
+-(void)addConnection:(ConnectionVO *)conn{
+    BOOL shouldAdd = YES;
+    for (ConnectionVO *objConn in self.connectionVOs) {
+        if ([objConn isEqualToConnection:conn]) {
+            shouldAdd = NO;
+            break;
+        }
+    }
+    if (shouldAdd) {
+        [self.connectionVOs addObject:conn];
+    }
+}
+// Index of line array in Canvas View and index of corrosponding connection VOs should be same
+-(void)removeConnectionAtIndex:(int)index{
+    if (self.connectionVOs.count > index) {
+        [self.connectionVOs removeObjectAtIndex:index];
+    }
+    [self redrawCanvasView];
+}
 @end

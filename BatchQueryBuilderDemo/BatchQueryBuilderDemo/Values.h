@@ -7,6 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+@class Values;
+
+@protocol ValuesDelegate <NSObject>
+@optional
+-(void)valuesTableDidScroll:(Values *)tableVC;
+
+@end
 
 @interface Values : UITableViewController{
     NSMutableArray *values;
@@ -15,6 +22,8 @@
 
 @property (strong) NSMutableArray *values;
 @property (strong) NSString *tableName;
+@property (strong) id<ValuesDelegate>delegate;
+
 - (id)initWithValues:(NSMutableArray *)paramValues withTableName:(NSString *)paramTableName;
 -(void) valueSelected: (NSString*)valueName;
 @end

@@ -28,6 +28,7 @@
     if (self) {
         // Initialization code
         [self setup];
+        self.delegate = self;
     }
     return self;
 }
@@ -167,6 +168,10 @@
             [self.target canvasView:self lineSelectedAtIndex:index];
         }
     }
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    [self setNeedsDisplay];
 }
 
 @end

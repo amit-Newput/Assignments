@@ -122,7 +122,7 @@
     return [NSArray arrayWithObjects:line1,line2,line3,line4, nil];
 }
 -(void)setup{
-    self.lines = [self getLines:1];
+    //self.lines = [self getLines:1];
     //self.lines = [NSArray arrayWithObjects:line1, nil];
     lineWidth = 5.0;
     lineColor = [UIColor redColor];
@@ -155,8 +155,13 @@
     CGPoint target = [tap locationInView:self];
     NSInteger index = -1;
     int counter = 0;
+    if([self.target respondsToSelector:@selector(handleTapOnCanvasView:)]){
+        [self.target handleTapOnCanvasView:tap];
+    }
+    
     for (UIBezierPath *path in pathArray) {
         if(CGPathContainsPoint(path.CGPath, &CGAffineTransformIdentity, target, NO)){
+            
             index = counter;
             break;
         }
@@ -164,12 +169,31 @@
     }
     if (index != -1) {
         NSLog(@"line selected: %d",index);
-        if ([self.target respondsToSelector:@selector(canvasView:lineSelectedAtIndex:)]) {
-            [self.target canvasView:self lineSelectedAtIndex:index];
+        if(self.deleteButton){
+            [self.deleteButton removeFromSuperview];
+            self.deleteButton =nil;
         }
+        self.deleteButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [self.deleteButton setTitle:@"X" forState:UIControlStateNormal];
+        self.deleteButton.titleLabel.font =[UIFont boldSystemFontOfSize:15.0];
+        self.deleteButton.frame = CGRectMake(target.x, target.y, 50, 50);
+        [self.deleteButton addTarget:self action:@selector(deleteConnection:) forControlEvents:UIControlEventTouchDown];
+        [self addSubview:self.deleteButton];
+        self.deleteButton.tag = index;
+        
+        
+       
     }
+    
 }
+-(void)deleteConnection:(UIButton *)button{
+    
+    if ([self.target respondsToSelector:@selector(canvasView:lineSelectedAtIndex:)]) {
+        [self.target canvasView:self lineSelectedAtIndex:button.tag];
+    }
+    [button removeFromSuperview];
 
+}
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     [self setNeedsDisplay];
 }

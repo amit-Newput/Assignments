@@ -57,7 +57,7 @@
     canvasView.contentSize = self.canvasView.frame.size;
     canvasView.backgroundColor = [UIColor blueColor];
     canvasView.showsHorizontalScrollIndicator = canvasView.showsVerticalScrollIndicator = YES;
-    
+    canvasView.target =self;
     [self.canvasBackView addSubview:canvasView];
     
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFacetPanning:)];
@@ -66,6 +66,9 @@
     canvasViewTablesDic = [[NSMutableDictionary alloc] init];
     tagByTableNameMapping = [[NSMutableDictionary alloc] init];
     numberOfTablesExistInCanvasView = 0;
+    if (!self.connectionVOs) {
+        self.connectionVOs = [NSMutableArray array];
+    }
     
 }
 //code related to dragging Facets
@@ -130,6 +133,9 @@
         origin.y = locInMainView.y - 5;
         [self initDraggedFacetWithCell:cell atPoint:origin];
         cell.highlighted = NO;
+        
+        
+        
         if (draggedCellData != nil) {
             draggedCellData = nil;
         }
@@ -149,7 +155,7 @@
 
 -(void)stopCanvasDragging:(UIPanGestureRecognizer *)gesture{
     highlightedCell.highlighted = NO;
-    if (draggedCell) {
+    if (draggedCell && highlightedCell) {
         ConnectionVO *connectionVo = [[ConnectionVO alloc] init];
         connectionVo.cell1 = initialDraggedCell;
         connectionVo.cell2 = highlightedCell;
@@ -157,13 +163,10 @@
         connectionVo.value1 = initialDraggedCell.textLabel.text;
         connectionVo.value2 = highlightedCell.textLabel.text;
         
-        if (!self.connectionVOs) {
-            self.connectionVOs = [NSMutableArray array];
-        }
         [self addConnection:connectionVo];
 
     }
-    [self redrawCanvasView];
+    //[self redrawCanvasView];
     [self clearDraggingObjects];
     
 }
@@ -196,10 +199,18 @@
              if( ![canvasViewTablesDic objectForKey:tableName]){
                  Values *sourceValueTable = [[Values alloc] initWithValues:valueArray withTableName:tableName];
                  sourceValueTable.delegate = self;
-                 sourceValueTable.view.frame = CGRectMake(0, 0,200, 200);
+                 sourceValueTable.view.frame = CGRectMake(0, 44,200, 200);
                  
                  
                  UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:sourceValueTable];
+                 
+                 UIButton *button = [UIButton  buttonWithType:UIButtonTypeCustom];
+                 [button setTitle:@"X" forState:UIControlStateNormal];
+                 [button setFrame:CGRectMake(0, 0, 20, 20)];
+                 
+                 UIBarButtonItem *deleteTableButton = [[UIBarButtonItem  alloc] initWithCustomView:button];
+                 
+                 sourceValueTable.navigationItem.rightBarButtonItem = deleteTableButton;
                  
                  sourceValueTableNav.view.frame =CGRectMake(droppedAtPoint.x, droppedAtPoint.y,200, 200);
                  
@@ -232,6 +243,7 @@
 	[self clearDraggingObjects];
     
 }
+
 
 -(void) handleTappingCanvasTable:(UITapGestureRecognizer *)gesture{
     //return;
@@ -274,6 +286,7 @@
     
 }
 -(void) clearDraggingObjects{
+    [self removeTemporaryConnections];
     draggedTableNav = nil;
     //remove dragged cell from super view, we don't need it anymore
 	[draggedCell removeFromSuperview];
@@ -282,6 +295,7 @@
     draggedTable = nil;
     highlightedCell =nil;
     initialDraggedCell = nil;
+    
 }
 -(void) dragCanvasObject:(UIPanGestureRecognizer *)gesture{
     if(draggedTableNav){
@@ -367,6 +381,7 @@
 {
     //Unhighlight the last cell highlighted
     highlightedCell.highlighted = NO;
+    highlightedCell = nil;
     for (NSString *key in self.canvasViewTablesDic) {
         UINavigationController *tableNav = [self.canvasViewTablesDic objectForKey:key];
         CGPoint translatedPoint = [tableNav.topViewController.view convertPoint:point fromView:self.view];
@@ -388,16 +403,16 @@
 -(void)identifyDraggedView:(UIPanGestureRecognizer *)gesture{
     
     UINavigationController *tableNav = [canvasViewTablesDic objectForKey:[tagByTableNameMapping objectForKey:[NSString stringWithFormat:@"%d",gesture.view.tag]]];
-    CGPoint startingPoint = [gesture locationInView:tableNav.view];
-    
-    if([tableNav.navigationBar pointInside:startingPoint withEvent:nil]){
+    CGPoint startingPointInNavigationView = [gesture locationInView:tableNav.view];
+    CGPoint startingPointInTableView = [gesture locationInView:tableNav.topViewController.view];
+    if([tableNav.navigationBar pointInside:startingPointInNavigationView withEvent:nil]){
         NSLog(@"Coming inside navigation bar");
         draggedTableNav = tableNav;
         
         //draggedTableNav.view.frame = CGRectMake(draggedTableNav.view.frame.origin.x+5, draggedTableNav.view.frame.origin.y +5, draggedTableNav.view.frame.size.width, draggedTableNav.view.frame.size.height);
         [draggedTableNav.view.superview bringSubviewToFront:draggedTableNav.view];
         
-    }else if([tableNav.topViewController.view pointInside:startingPoint withEvent:nil]){
+    }else if([tableNav.topViewController.view pointInside:startingPointInTableView withEvent:nil]){
         NSLog(@"Coming inside table cell %@", [tableNav topViewController].view);
         
         UITableView * tableView = (UITableView *)[tableNav topViewController].view;
@@ -414,6 +429,17 @@
             origin.x = locInMainView.x - 5;
             origin.y = locInMainView.y - 5;
             [self initDraggedFacetWithCell:cell atPoint:origin];
+            
+            //Create Temp Connection
+            ConnectionVO *tempConnectionVO = [[ConnectionVO alloc] init];
+            tempConnectionVO.cell1 =initialDraggedCell;
+            tempConnectionVO.cell2 = draggedCell;
+            tempConnectionVO.value1 = initialDraggedCell.textLabel.text;
+            tempConnectionVO.value2 = draggedCell.textLabel.text;
+            tempConnectionVO.isTemporary = YES;
+            [self addConnection:tempConnectionVO];
+
+            
             cell.highlighted = NO;
             if (draggedCellData != nil) {
                 draggedCellData = nil;
@@ -461,7 +487,7 @@
 
 -(void)valuesTableDidScroll:(Values *)tableVC{
     [self redrawCanvasView];
-    NSLog(@"%@",NSStringFromCGPoint([self.canvasView convertPoint:tableVC.tableView.frame.origin fromView:tableVC.tableView.superview]));
+    //NSLog(@"%@",NSStringFromCGPoint([self.canvasView convertPoint:tableVC.tableView.frame.origin fromView:tableVC.tableView.superview]));
     
     
 }
@@ -484,5 +510,46 @@
         [self.connectionVOs removeObjectAtIndex:index];
     }
     [self redrawCanvasView];
+}
+
+-(void)removeTemporaryConnections{
+    for (int i=0; i < self.connectionVOs.count ; i++) {
+        ConnectionVO *newConn = [self.connectionVOs objectAtIndex:i];
+        if(newConn.isTemporary){
+            [self.connectionVOs removeObject:newConn];
+            i--;
+        }
+    }
+}
+-(void)canvasView:(CanvasView *)canvasView lineSelectedAtIndex:(NSInteger)index;{
+    
+    
+    [self removeConnectionAtIndex:index];
+}
+
+-(void) handleTapOnCanvasView:(UITapGestureRecognizer *) gesture{
+    
+    for (UINavigationController *tableNav in canvasViewTablesDic.allValues) {
+        Values * valuesTable = (Values *)[tableNav topViewController];
+        CGPoint startingPointInTableNav = [gesture locationInView:valuesTable.navigationItem.rightBarButtonItem.customView ];
+        CGPoint startingPointInTableView = [gesture locationInView:tableNav.topViewController.view];
+        
+        
+        if([valuesTable.navigationItem.rightBarButtonItem.customView  pointInside:startingPointInTableNav withEvent:nil]){
+            
+            //Handle Deletion of table here
+            
+        }
+        else if([tableNav.topViewController.view pointInside:startingPointInTableView withEvent:nil]){
+                
+                CGPoint cellPoint = [gesture locationInView:valuesTable.view];
+                NSIndexPath *indexPath = [valuesTable.tableView indexPathForRowAtPoint:cellPoint];
+               // UITableViewCell *cell = [valuesTable.tableView cellForRowAtIndexPath:indexPath];
+                [valuesTable tableView:valuesTable.tableView didSelectRowAtIndexPath:indexPath];
+
+                break;
+        } 
+        
+    }
 }
 @end

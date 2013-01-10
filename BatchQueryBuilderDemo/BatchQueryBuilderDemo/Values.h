@@ -26,4 +26,5 @@
 
 - (id)initWithValues:(NSMutableArray *)paramValues withTableName:(NSString *)paramTableName;
 -(void) valueSelected: (NSString*)valueName;
+-(void) toggleTableRowSelection:(NSIndexPath *)indexPath;
 @end

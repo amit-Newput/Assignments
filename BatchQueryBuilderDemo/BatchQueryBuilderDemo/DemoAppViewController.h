@@ -11,7 +11,7 @@
 #import "CanvasView.h"
 #import "Values.h"
 
-@interface DemoAppViewController : UIViewController<ValuesDelegate>{
+@interface DemoAppViewController : UIViewController<ValuesDelegate,CanvasViewDelegate>{
     IBOutlet UIView *canvasBackView;
     IBOutlet UIView *sourcesTableBackView;
     NSMutableDictionary *sources;

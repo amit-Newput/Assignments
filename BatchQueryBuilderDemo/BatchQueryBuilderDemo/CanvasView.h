@@ -14,6 +14,7 @@
 
 @optional
 
+-(void) handleTapOnCanvasView:(UITapGestureRecognizer *) gesture;
 -(void)canvasView:(CanvasView *)canvasView lineSelectedAtIndex:(NSInteger)index;
 
 @end
@@ -23,5 +24,6 @@
 
 @property (strong) NSArray *lines;
 @property (strong) id <CanvasViewDelegate> target;
+@property (strong) UIButton *deleteButton;
 
 @end

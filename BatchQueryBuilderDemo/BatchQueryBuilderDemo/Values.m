@@ -43,6 +43,7 @@
 {
     [super viewDidLoad];
     self.selectedValues = [[NSMutableDictionary alloc] init];
+    //self.tableView.bounces = NO;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -143,6 +144,11 @@
 }
 */
 
+-(void) toggleTableRowSelection:(NSIndexPath *)indexPath{
+    [self tableView:self.tableView didSelectRowAtIndexPath:indexPath];
+}
+
+
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -168,12 +174,27 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
 }
+//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+//    return 30;
+//}
+//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+//    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width,30)];
+//    footerView.backgroundColor = [UIColor grayColor];
+//    return footerView;
+//}
+
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     //NSLog(@"Coming in scroll view");
     if ([self.delegate respondsToSelector:@selector(valuesTableDidScroll:)]) {
         [self.delegate valuesTableDidScroll:self];
     }
+//    if (scrollView.contentOffset.y <= -100)
+//    {
+//        CGPoint offset = scrollView.contentOffset;
+//        offset.y = -100;
+//        scrollView.contentOffset = offset;
+//    }
 }
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     //NSLog(@"Coming in scroll view scrollViewDidEndDragging");

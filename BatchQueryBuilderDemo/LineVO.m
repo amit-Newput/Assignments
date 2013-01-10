@@ -16,6 +16,9 @@
         self.startPoint2 = sp2;
         self.endPoint1 = ep1;
         self.endPoint2 = ep2;
+        self.startPoint = [self getPoint:YES];
+        self.endPoint = [self getPoint:NO];
+        self.length = [self getLenght];
     }
     return self;
 }
@@ -43,34 +46,38 @@
             resultPoint = self.startPoint1;
         else
             resultPoint = self.endPoint1;
+        NSLog(@">>>1");
         
     }else if (length2 < length3 && length2 < length4){
         if (returnStartPoint)
             resultPoint = self.startPoint1;
         else
             resultPoint = self.endPoint2;
+        NSLog(@">>>2");
     }else if (length3 < length4){
         if (returnStartPoint)
             resultPoint = self.startPoint2;
         else
             resultPoint = self.endPoint2;
+        NSLog(@">>>3");
     }else{
         if (returnStartPoint)
             resultPoint = self.startPoint2;
         else
             resultPoint = self.endPoint1;
+        NSLog(@">>>4");
     }
     return resultPoint;
     
 }
 
--(CGPoint)startPoint{
-    return [self getPoint:YES];
-}
--(CGPoint)endPoint{
-    return [self getPoint:NO];
-}
--(CGFloat)lenght{
+//-(CGPoint)startPoint{
+//    return [self getPoint:YES];
+//}
+//-(CGPoint)endPoint{
+//    return [self getPoint:NO];
+//}
+-(CGFloat)getLenght{
    
     CGPoint point1 = self.startPoint;
     CGPoint point2 = self.endPoint;

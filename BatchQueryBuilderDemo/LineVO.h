@@ -14,11 +14,10 @@
 @property CGPoint startPoint2;
 @property CGPoint endPoint1;
 @property CGPoint endPoint2;
+@property CGPoint startPoint;
+@property CGPoint endPoint;
+@property CGFloat length;
 
 -(id)initWithStartPoint1:(CGPoint)sp1 startPoint2:(CGPoint)sp2 endPoint1:(CGPoint)ep1 endPoint2:(CGPoint)ep2;
-
--(CGPoint)startPoint;
--(CGPoint)endPoint;
--(CGFloat)lenght;
 
 @end

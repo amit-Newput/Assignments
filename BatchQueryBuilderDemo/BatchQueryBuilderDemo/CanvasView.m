@@ -14,7 +14,10 @@
     NSArray *pathArray;
     CGFloat lineWidth;
     UIColor *lineColor;
-     UIColor *fillColor;
+    UIColor *fillColor;
+    int selectedLineIndex;
+    BOOL highlighted;
+    CGFloat highlightedLineWidth;
 
 }
 @end
@@ -32,6 +35,17 @@
     }
     return self;
 }
+-(CGFloat)highlightedLineWidth{
+    static BOOL shouldInc = YES;
+    
+    if (highlightedLineWidth >= lineWidth*2)
+        shouldInc = NO;
+    if (highlightedLineWidth <= 4)
+        shouldInc = YES;
+    
+    highlightedLineWidth = shouldInc ? highlightedLineWidth+2: highlightedLineWidth-2;
+    return highlightedLineWidth;
+}
 -(void)setLines:(NSArray *)paramLines{
     lines  = paramLines;
     NSMutableArray *mutablePaths = [NSMutableArray array];
@@ -39,7 +53,8 @@
         CGPoint start = line.startPoint;
         CGPoint end = line.endPoint;
         
-        UIBezierPath *path = [UIBezierPath bezierPath];
+        UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:start radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
+        path.lineWidth = lineWidth;
         [path moveToPoint:start];
         CGPoint controlPoint1 = start;
         CGPoint controlPoint2 = end;
@@ -60,6 +75,7 @@
         
         
         [path addCurveToPoint:end controlPoint1:controlPoint1 controlPoint2:controlPoint2];
+        [path addArcWithCenter:end radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
         [mutablePaths addObject:path];
     }
     pathArray = [NSArray arrayWithArray:mutablePaths];
@@ -98,33 +114,41 @@
     return [NSArray arrayWithObjects:line1,line2,line3,line4, nil];
 }
 -(void)setup{
-    //self.lines = [self getLines:1];
-    //self.lines = [NSArray arrayWithObjects:line1, nil];
     lineWidth = 5.0;
     lineColor = [UIColor redColor];
     fillColor = [UIColor clearColor];
+    selectedLineIndex = -1;
+    highlightedLineWidth = 0;
+    highlighted = YES;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTap:)];
     [self addGestureRecognizer:tap];
-    //[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(handleTimer) userInfo:nil repeats:YES];
+    //[NSTimer scheduledTimerWithTimeInterval:1.0/10.0 target:self selector:@selector(handleTimer) userInfo:nil repeats:YES];
 }
 -(void)handleTimer{
-    self.lines = [self getLines:((double)arc4random() / 0x100000000)];
+    if (selectedLineIndex != -1 && selectedLineIndex < pathArray.count ) {
+        UIBezierPath *path = [pathArray objectAtIndex:selectedLineIndex];
+        [self setNeedsDisplayInRect:CGPathGetBoundingBox(path.CGPath)];
+    }
     
-    [self setNeedsDisplay];
 }
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    CGContextSetLineWidth(context, lineWidth);
     CGContextSetStrokeColorWithColor(context, lineColor.CGColor);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
     
+    int counter = 0;
     for (UIBezierPath *path in pathArray) {
-        path.lineWidth = lineWidth;
+        CGFloat lWidth = path.lineWidth;
+//        if (highlighted && counter == selectedLineIndex) {
+//            lWidth = [self highlightedLineWidth];
+//        }
+        CGContextSetLineWidth(context, lWidth);
         CGContextAddPath(context, path.CGPath);
+        CGContextDrawPath(context, kCGPathEOFillStroke);
+        counter++;
     }
-    CGContextDrawPath(context, kCGPathEOFillStroke);
+    
 }
 
 -(void)handleTap:(UITapGestureRecognizer *)tap{

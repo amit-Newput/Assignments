@@ -46,26 +46,26 @@
             resultPoint = self.startPoint1;
         else
             resultPoint = self.endPoint1;
-        NSLog(@">>>1");
+        //NSLog(@">>>1");
         
     }else if (length2 < length3 && length2 < length4){
         if (returnStartPoint)
             resultPoint = self.startPoint1;
         else
             resultPoint = self.endPoint2;
-        NSLog(@">>>2");
+       // NSLog(@">>>2");
     }else if (length3 < length4){
         if (returnStartPoint)
             resultPoint = self.startPoint2;
         else
             resultPoint = self.endPoint1;
-        NSLog(@">>>3");
+       // NSLog(@">>>3");
     }else{
         if (returnStartPoint)
             resultPoint = self.startPoint2;
         else
             resultPoint = self.endPoint2;
-        NSLog(@">>>4");
+       // NSLog(@">>>4");
     }
     return resultPoint;
     

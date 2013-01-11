@@ -6,18 +6,13 @@
 //  Copyright (c) 2013 Prateek Pradhan. All rights reserved.
 //
 
-#import "Values.h"
+#import "FieldsTable.h"
+#import "FieldVO.h"
+#import "DataCell.h"
 
-@interface Values ()
 
-//  field name as key and selected or not as value (BOOL YES NO)
-@property (strong, nonatomic) NSMutableDictionary *selectedValues;
-@end
+@implementation FieldsTable
 
-@implementation Values
-
-@synthesize values,tableName;
-@synthesize selectedValues;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -28,21 +23,19 @@
     return self;
 }
 
-- (id)initWithValues:(NSMutableArray *)paramValues withTableName:(NSString *)paramTableName
+- (id)initWithSourceVO:(SourceVO *)paramSourceVO
 {
     self = [super init];
     if (self) {
         // Custom initialization
-        self.values = paramValues ;
-        self.tableName = paramTableName;
-        self.title = tableName;
+        self.sourceVO = paramSourceVO ;
+        self.title = paramSourceVO.name;
     }
     return self;
 }
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.selectedValues = [[NSMutableDictionary alloc] init];
     //self.tableView.bounces = NO;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -52,8 +45,8 @@
 }
 
 
--(void) valueSelected: (NSString*)valueName{
-    [self.selectedValues setObject:@"YES" forKey:valueName];
+-(void) valueSelected: (FieldVO*)paramFieldVO{
+    paramFieldVO.isSelected = YES;
     [self.tableView reloadData];
     
 }
@@ -76,24 +69,23 @@
 {
 
     // Return the number of rows in the section.
-    return [self.values count];
+    return [self.sourceVO.fieldVOs count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
     CellIdentifier = [NSString stringWithFormat:@"Cell%d%d",indexPath.section,indexPath.row];
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    DataCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[DataCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.textLabel.text = [self.values objectAtIndex:indexPath.row];
-    
-    //NSLog(@" Field Selected:%@", [self.selectedValues objectForKey: cell.textLabel.text]);
-    BOOL isSelected =[[self.selectedValues objectForKey: cell.textLabel.text] boolValue];
+    FieldVO * fieldVO = [self.sourceVO.fieldVOs objectAtIndex:indexPath.row];
+    cell.data = fieldVO;
+    cell.textLabel.text = fieldVO.name;
     
     //Add the check mark to show the field is selected or not
-    if(isSelected){
+    if( fieldVO.isSelected){
         cell.accessoryType = UITableViewCellAccessoryCheckmark ;
     }
     else{
@@ -153,41 +145,28 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell  = [self.tableView cellForRowAtIndexPath:indexPath];
+    DataCell *cell  = (DataCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    FieldVO * fieldVO = [self.sourceVO.fieldVOs objectAtIndex:indexPath.row];
     
     if(cell.accessoryType == UITableViewCellAccessoryCheckmark){
         cell.accessoryType = UITableViewCellAccessoryNone;
-       [self.selectedValues setObject:@"NO" forKey:cell.textLabel.text];
+        fieldVO.isSelected = NO;
     }
     else{
       cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    [self.selectedValues setObject:@"YES" forKey:cell.textLabel.text];
+        fieldVO.isSelected = YES;
 
     }
     [self.navigationController.view.superview bringSubviewToFront:self.navigationController.view];
     
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
 }
-//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-//    return 30;
-//}
-//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
-//    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width,30)];
-//    footerView.backgroundColor = [UIColor grayColor];
-//    return footerView;
-//}
+
 
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     //NSLog(@"Coming in scroll view");
-    if ([self.delegate respondsToSelector:@selector(valuesTableDidScroll:)]) {
-        [self.delegate valuesTableDidScroll:self];
+    if ([self.delegate respondsToSelector:@selector(fieldsTableDidScroll:)]) {
+        [self.delegate fieldsTableDidScroll:self];
     }
 //    if (scrollView.contentOffset.y <= -100)
 //    {

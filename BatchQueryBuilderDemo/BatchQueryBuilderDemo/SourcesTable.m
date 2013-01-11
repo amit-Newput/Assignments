@@ -1,24 +1,25 @@
 //
-//  Facets.m
+//  SourcesTable.m
 //  BatchQueryBuilderDemo
 //
 //  Created by Prateek Pradhan on 08/01/13.
 //  Copyright (c) 2013 Prateek Pradhan. All rights reserved.
 //
 
-#import "Facets.h"
-#import "Values.h"
+#import "SourcesTable.h"
+#import "FieldsTable.h"
+#import "SourceVO.h"
+#import "DataCell.h"
 
-@interface Facets ()
+@interface SourcesTable ()
 
 
 
 @end
 
-@implementation Facets
+@implementation SourcesTable
 
-@synthesize sources;
-@synthesize selectedValueTable;
+@synthesize selectedFieldsTable;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -27,11 +28,11 @@
     }
     return self;
 }
-- (id)initWithSources:(NSMutableDictionary *) paramSources
+- (id)initWithSources:(NSMutableArray *) paramSourceVOs
 {
     self = [super init];
     if (self) {
-        self.sources = paramSources;
+        self.sourceVOs = paramSourceVOs;
         self.title = @"Sources";
         // Custom initialization
     }
@@ -46,7 +47,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.facetKeys = [self.sources allKeys];
+
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -81,18 +82,20 @@
 {
 
     // Return the number of rows in the section.
-    return [self.facetKeys count];
+    return [self.sourceVOs count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    DataCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[DataCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    cell.textLabel.text = [self.facetKeys  objectAtIndex:indexPath.row];
+    SourceVO *sourceVO = [self.sourceVOs  objectAtIndex:indexPath.row];
+    cell.data = sourceVO;
+    cell.textLabel.text = sourceVO.name;
     
     // Configure the cell...
     
@@ -145,11 +148,11 @@
     // Navigation logic may go here. Create and push another view controller.
     
     
-    self.selectedValueTable = [[Values alloc] initWithValues:[self.sources objectForKey:[self.facetKeys objectAtIndex:indexPath.row]] withTableName:[self.facetKeys objectAtIndex:indexPath.row]];
+    self.selectedFieldsTable = [[FieldsTable alloc] initWithSourceVO:[self.sourceVOs objectAtIndex:indexPath.row]];
     
      // ...
      // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:self.selectedValueTable animated:YES];
+     [self.navigationController pushViewController:self.selectedFieldsTable animated:YES];
 
     
 }

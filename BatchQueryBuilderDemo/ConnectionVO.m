@@ -28,7 +28,7 @@
 
 -(LineVO *) getLineVOForView: (UIView*)view{
     
-    NSLog(@"Cell 1%@ : Cell2 %@",self.cell1,self.cell2);
+   // NSLog(@"Cell 1%@ : Cell2 %@",self.cell1,self.cell2);
     CGPoint startPoint1 = CGPointMake(self.cell1.frame.origin.x  ,self.cell1.frame.origin.y + (self.cell1.frame.size.height /2) );
     CGPoint startPoint2 = CGPointMake((self.cell1.frame.origin.x-1 + self.cell1.frame.size.width) ,(self.cell1.frame.origin.y + (self.cell1.frame.size.height)/2) );
     
@@ -100,7 +100,7 @@
     pSP2 = startPoint2;
     pEP1 = endPoint1;
     pEP2 = endPoint2;
-    NSLog(@" Previus value psp1.y = %f  and psp2.y = %f",pSP1.y,pSP2.y);
+   // NSLog(@" Previus value psp1.y = %f  and psp2.y = %f",pSP1.y,pSP2.y);
     
     
     if (fromView1) {
@@ -117,9 +117,26 @@
     return objLineVO;}
 
 -(BOOL)isEqualToConnection:(ConnectionVO *)connection{
-    if ([self.value1 isEqualToString:connection.value1] && [self.value2 isEqualToString:connection.value2]) {
-        return YES;
-    }
+  
+    // There are two fields Ids in self and two in connection. So total there will be four combinations. Below we
+    // are checking those combinations.
+//    if ( ([self.fieldVO1.fieldID isEqualToString:connection.fieldVO1.fieldID] &&
+//          [self.fieldVO2.fieldID isEqualToString:connection.fieldVO2.fieldID] )||
+//        ([self.fieldVO2.fieldID isEqualToString:connection.fieldVO1.fieldID] &&
+//         [self.fieldVO1.fieldID isEqualToString:connection.fieldVO2.fieldID] )
+//        ) {
+//        
+//        if( ([self.fieldVO1.sourceID isEqualToString:connection.fieldVO1.sourceID]
+//             && [self.fieldVO2.sourceID isEqualToString:connection.fieldVO2.sourceID] ) ||
+//           ([self.fieldVO2.sourceID isEqualToString:connection.fieldVO1.sourceID] &&
+//            [self.fieldVO1.sourceID isEqualToString:connection.fieldVO2.sourceID] )){
+//               return YES;
+//        }
+//     
+//    }
     return NO;
+}
+-(BOOL)isTemporary{
+    return self.fieldVO2 ? NO : YES;
 }
 @end

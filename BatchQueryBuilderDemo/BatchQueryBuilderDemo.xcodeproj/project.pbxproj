@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		61D9266F169DA516004A856D /* ConnectionVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9266E169DA516004A856D /* ConnectionVO.m */; };
+		61D9267B169FEB85004A856D /* FieldVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9267A169FEB84004A856D /* FieldVO.m */; };
+		61D9267F169FEDD9004A856D /* SourceVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9267E169FEDD9004A856D /* SourceVO.m */; };
+		61D9268216A01587004A856D /* DataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9268116A01586004A856D /* DataCell.m */; };
 		FB9ABA34169C247200CE14F4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA33169C247200CE14F4 /* UIKit.framework */; };
 		FB9ABA36169C247200CE14F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA35169C247200CE14F4 /* Foundation.framework */; };
 		FB9ABA38169C247200CE14F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA37169C247200CE14F4 /* CoreGraphics.framework */; };
@@ -20,16 +23,22 @@
 		FB9ABA4D169C247200CE14F4 /* DemoAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA4C169C247200CE14F4 /* DemoAppViewController.m */; };
 		FB9ABA50169C247200CE14F4 /* DemoAppViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA4E169C247200CE14F4 /* DemoAppViewController.xib */; };
 		FB9ABA58169C32C000CE14F4 /* CanvasView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA57169C32C000CE14F4 /* CanvasView.m */; };
-		FB9ABA5C169C35F600CE14F4 /* Facets.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA5A169C35F600CE14F4 /* Facets.m */; };
-		FB9ABA5D169C35F600CE14F4 /* Facets.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA5B169C35F600CE14F4 /* Facets.xib */; };
-		FB9ABA61169C362100CE14F4 /* Values.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA5F169C362000CE14F4 /* Values.m */; };
-		FB9ABA62169C362100CE14F4 /* Values.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA60169C362000CE14F4 /* Values.xib */; };
+		FB9ABA5C169C35F600CE14F4 /* SourcesTable.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA5A169C35F600CE14F4 /* SourcesTable.m */; };
+		FB9ABA5D169C35F600CE14F4 /* SourcesTable.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA5B169C35F600CE14F4 /* SourcesTable.xib */; };
+		FB9ABA61169C362100CE14F4 /* FieldsTable.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA5F169C362000CE14F4 /* FieldsTable.m */; };
+		FB9ABA62169C362100CE14F4 /* FieldsTable.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA60169C362000CE14F4 /* FieldsTable.xib */; };
 		FBB1BBE2169D620500AFFAE7 /* LineVO.m in Sources */ = {isa = PBXBuildFile; fileRef = FBB1BBE1169D620500AFFAE7 /* LineVO.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		61D9266D169DA516004A856D /* ConnectionVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionVO.h; sourceTree = "<group>"; };
 		61D9266E169DA516004A856D /* ConnectionVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionVO.m; sourceTree = "<group>"; };
+		61D92679169FEB84004A856D /* FieldVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldVO.h; sourceTree = "<group>"; };
+		61D9267A169FEB84004A856D /* FieldVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldVO.m; sourceTree = "<group>"; };
+		61D9267D169FEDD9004A856D /* SourceVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceVO.h; sourceTree = "<group>"; };
+		61D9267E169FEDD9004A856D /* SourceVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceVO.m; sourceTree = "<group>"; };
+		61D9268016A01586004A856D /* DataCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataCell.h; sourceTree = "<group>"; };
+		61D9268116A01586004A856D /* DataCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataCell.m; sourceTree = "<group>"; };
 		FB9ABA2F169C247200CE14F4 /* BatchQueryBuilderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatchQueryBuilderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB9ABA33169C247200CE14F4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FB9ABA35169C247200CE14F4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -48,12 +57,12 @@
 		FB9ABA4F169C247200CE14F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DemoAppViewController.xib; sourceTree = "<group>"; };
 		FB9ABA56169C32C000CE14F4 /* CanvasView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CanvasView.h; sourceTree = "<group>"; };
 		FB9ABA57169C32C000CE14F4 /* CanvasView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CanvasView.m; sourceTree = "<group>"; };
-		FB9ABA59169C35F600CE14F4 /* Facets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Facets.h; sourceTree = "<group>"; };
-		FB9ABA5A169C35F600CE14F4 /* Facets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Facets.m; sourceTree = "<group>"; };
-		FB9ABA5B169C35F600CE14F4 /* Facets.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Facets.xib; sourceTree = "<group>"; };
-		FB9ABA5E169C362000CE14F4 /* Values.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Values.h; sourceTree = "<group>"; };
-		FB9ABA5F169C362000CE14F4 /* Values.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Values.m; sourceTree = "<group>"; };
-		FB9ABA60169C362000CE14F4 /* Values.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Values.xib; sourceTree = "<group>"; };
+		FB9ABA59169C35F600CE14F4 /* SourcesTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourcesTable.h; sourceTree = "<group>"; };
+		FB9ABA5A169C35F600CE14F4 /* SourcesTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourcesTable.m; sourceTree = "<group>"; };
+		FB9ABA5B169C35F600CE14F4 /* SourcesTable.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SourcesTable.xib; sourceTree = "<group>"; };
+		FB9ABA5E169C362000CE14F4 /* FieldsTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldsTable.h; sourceTree = "<group>"; };
+		FB9ABA5F169C362000CE14F4 /* FieldsTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldsTable.m; sourceTree = "<group>"; };
+		FB9ABA60169C362000CE14F4 /* FieldsTable.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FieldsTable.xib; sourceTree = "<group>"; };
 		FBB1BBE0169D620500AFFAE7 /* LineVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineVO.h; sourceTree = "<group>"; };
 		FBB1BBE1169D620500AFFAE7 /* LineVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineVO.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -75,6 +84,10 @@
 		FB9ABA24169C247200CE14F4 = {
 			isa = PBXGroup;
 			children = (
+				61D9267D169FEDD9004A856D /* SourceVO.h */,
+				61D9267E169FEDD9004A856D /* SourceVO.m */,
+				61D92679169FEB84004A856D /* FieldVO.h */,
+				61D9267A169FEB84004A856D /* FieldVO.m */,
 				61D9266D169DA516004A856D /* ConnectionVO.h */,
 				61D9266E169DA516004A856D /* ConnectionVO.m */,
 				FBB1BBE0169D620500AFFAE7 /* LineVO.h */,
@@ -114,12 +127,14 @@
 				FB9ABA3A169C247200CE14F4 /* Supporting Files */,
 				FB9ABA56169C32C000CE14F4 /* CanvasView.h */,
 				FB9ABA57169C32C000CE14F4 /* CanvasView.m */,
-				FB9ABA59169C35F600CE14F4 /* Facets.h */,
-				FB9ABA5A169C35F600CE14F4 /* Facets.m */,
-				FB9ABA5B169C35F600CE14F4 /* Facets.xib */,
-				FB9ABA5E169C362000CE14F4 /* Values.h */,
-				FB9ABA5F169C362000CE14F4 /* Values.m */,
-				FB9ABA60169C362000CE14F4 /* Values.xib */,
+				FB9ABA59169C35F600CE14F4 /* SourcesTable.h */,
+				FB9ABA5A169C35F600CE14F4 /* SourcesTable.m */,
+				FB9ABA5B169C35F600CE14F4 /* SourcesTable.xib */,
+				FB9ABA5E169C362000CE14F4 /* FieldsTable.h */,
+				FB9ABA5F169C362000CE14F4 /* FieldsTable.m */,
+				FB9ABA60169C362000CE14F4 /* FieldsTable.xib */,
+				61D9268016A01586004A856D /* DataCell.h */,
+				61D9268116A01586004A856D /* DataCell.m */,
 			);
 			path = BatchQueryBuilderDemo;
 			sourceTree = "<group>";
@@ -195,8 +210,8 @@
 				FB9ABA48169C247200CE14F4 /* Default@2x.png in Resources */,
 				FB9ABA4A169C247200CE14F4 /* Default-568h@2x.png in Resources */,
 				FB9ABA50169C247200CE14F4 /* DemoAppViewController.xib in Resources */,
-				FB9ABA5D169C35F600CE14F4 /* Facets.xib in Resources */,
-				FB9ABA62169C362100CE14F4 /* Values.xib in Resources */,
+				FB9ABA5D169C35F600CE14F4 /* SourcesTable.xib in Resources */,
+				FB9ABA62169C362100CE14F4 /* FieldsTable.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,10 +226,13 @@
 				FB9ABA44169C247200CE14F4 /* DemoAppAppDelegate.m in Sources */,
 				FB9ABA4D169C247200CE14F4 /* DemoAppViewController.m in Sources */,
 				FB9ABA58169C32C000CE14F4 /* CanvasView.m in Sources */,
-				FB9ABA5C169C35F600CE14F4 /* Facets.m in Sources */,
-				FB9ABA61169C362100CE14F4 /* Values.m in Sources */,
+				FB9ABA5C169C35F600CE14F4 /* SourcesTable.m in Sources */,
+				FB9ABA61169C362100CE14F4 /* FieldsTable.m in Sources */,
 				FBB1BBE2169D620500AFFAE7 /* LineVO.m in Sources */,
 				61D9266F169DA516004A856D /* ConnectionVO.m in Sources */,
+				61D9267B169FEB85004A856D /* FieldVO.m in Sources */,
+				61D9267F169FEDD9004A856D /* SourceVO.m in Sources */,
+				61D9268216A01587004A856D /* DataCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,29 +7,28 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Facets.h"
+#import "SourcesTable.h"
 #import "CanvasView.h"
-#import "Values.h"
+#import "FieldsTable.h"
+#import "DataCell.h"
 
-@interface DemoAppViewController : UIViewController<ValuesDelegate,CanvasViewDelegate>{
+@interface DemoAppViewController : UIViewController<FieldsTableDelegate,CanvasViewDelegate>{
     IBOutlet UIView *canvasBackView;
     IBOutlet UIView *sourcesTableBackView;
-    NSMutableDictionary *sources;
-    Facets *sourcesTable;
+    SourcesTable *sourcesTable;
     UINavigationController *sourcesTableNav;
-    NSString *draggedCellData;
-    UITableViewController *draggedTable;
+    //UITableViewController *draggedTable;
     UINavigationController *draggedTableNav;
-    UITableViewCell *draggedCell;
-    UITableViewCell *initialDraggedCell;
-    UITableViewCell *highlightedCell;
+    DataCell *draggedCell;
+    DataCell *initialDraggedCell;
+    DataCell *highlightedCell;
     NSMutableDictionary *canvasViewTablesDic;
 }
 
 @property (strong) IBOutlet UIView *canvasBackView;
 @property (strong) IBOutlet UIView *sourcesTableBackView;
-@property (strong) NSMutableDictionary *sources;
-@property (strong) IBOutlet  Facets *sourcesTable;
+@property (strong) NSMutableArray *sourceVOs;
+@property (strong) SourcesTable *sourcesTable;
 @property (strong) UINavigationController *sourcesTableNav;
 @property (strong) CanvasView *canvasView ;
 @property (strong) NSMutableDictionary *canvasViewTablesDic;

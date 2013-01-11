@@ -53,7 +53,8 @@
         CGPoint start = line.startPoint;
         CGPoint end = line.endPoint;
         
-        UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:start radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
+        //UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:start radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
+        UIBezierPath *path = [UIBezierPath bezierPath];
         path.lineWidth = lineWidth;
         [path moveToPoint:start];
         CGPoint controlPoint1 = start;
@@ -75,7 +76,7 @@
         
         
         [path addCurveToPoint:end controlPoint1:controlPoint1 controlPoint2:controlPoint2];
-        [path addArcWithCenter:end radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
+        //[path addArcWithCenter:end radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
         [mutablePaths addObject:path];
     }
     pathArray = [NSArray arrayWithArray:mutablePaths];
@@ -136,18 +137,16 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetStrokeColorWithColor(context, lineColor.CGColor);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
+     CGContextSetLineWidth(context, lineWidth);
     
     int counter = 0;
     for (UIBezierPath *path in pathArray) {
-        CGFloat lWidth = path.lineWidth;
-//        if (highlighted && counter == selectedLineIndex) {
-//            lWidth = [self highlightedLineWidth];
-//        }
-        CGContextSetLineWidth(context, lWidth);
         CGContextAddPath(context, path.CGPath);
-        CGContextDrawPath(context, kCGPathEOFillStroke);
+
         counter++;
     }
+    
+    CGContextDrawPath(context, kCGPathEOFillStroke);
     
 }
 

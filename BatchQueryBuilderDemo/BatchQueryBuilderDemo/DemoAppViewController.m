@@ -162,11 +162,12 @@
 
 -(void)stopCanvasDragging:(UIPanGestureRecognizer *)gesture{
     highlightedCell.highlighted = NO;
-    if (draggedCell && highlightedCell) {
+    if (draggedCell && highlightedCell && initialDraggedCell.data != highlightedCell.data) {
         ConnectionVO *connectionVo = [[ConnectionVO alloc] init];
         connectionVo.cell1 = initialDraggedCell;
         connectionVo.cell2 = highlightedCell;
         //Later following two fields will be replaced by VO's
+        
         connectionVo.fieldVO1 = (FieldVO *)initialDraggedCell.data;
         connectionVo.fieldVO2 = (FieldVO *)highlightedCell.data;
         [self addConnection:connectionVo];

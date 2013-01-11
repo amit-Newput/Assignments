@@ -38,50 +38,26 @@
     for (LineVO *line in self.lines) {
         CGPoint start = line.startPoint;
         CGPoint end = line.endPoint;
-    
+        
         UIBezierPath *path = [UIBezierPath bezierPath];
         [path moveToPoint:start];
-        CGPoint controlPoint1;
-        CGPoint controlPoint2;
-        /*
-        CGPoint midPoint = CGPointMake((line.startPoint.x + line.endPoint.x)/2, (line.startPoint.y + line.endPoint.y)/2);
-        CGFloat slop;
-       
-        if (start.x == end.x) {
-            // Parallal
-            
-            
-        }else{
-            slop = (start.y - end.y)/(start.x - end.x);
-            slop = -1 / slop;
-            //CGFloat slop = tanf(90);
-            CGFloat c = midPoint.y - slop * midPoint.x;
-            
-            controlPoint1 = CGPointMake((start.y-c)/slop, start.y);
-            controlPoint2 = CGPointMake(start.x, slop*start.x+c);
-            NSLog(@"c p 1 = %@",NSStringFromCGPoint(controlPoint1));
-             NSLog(@"c p 2 = %@",NSStringFromCGPoint(controlPoint2));
-            NSLog(@"%f",slop);
-
-        }*/
-        CGFloat cp1x;
-        CGFloat cp2x;
-        CGFloat cp1y;
-        CGFloat cp2y;
+        CGPoint controlPoint1 = start;
+        CGPoint controlPoint2 = end;
         CGFloat t = 50;
         
-        if (start.x < end.x) {
-            cp1x = start.x + t;
-            cp2x = end.x - t;
-        }else{
-            cp1x = start.x - t;
-            cp2x = end.x + t;
-        }
-        cp1y = start.y;
-        cp2y = end.y;
+        BOOL isStartPointLeftAligned = CGPointEqualToPoint(start, line.startPoint1);
+        BOOL isEndPointLeftAligned = CGPointEqualToPoint(end, line.endPoint1);
         
-        controlPoint1 = CGPointMake(cp1x, cp1y);
-        controlPoint2 = CGPointMake(cp2x, cp2y);
+        if (isStartPointLeftAligned)
+            controlPoint1.x = start.x - t;
+        else
+            controlPoint1.x = start.x + t;
+        
+        if (isEndPointLeftAligned)
+            controlPoint2.x = end.x - t;
+        else
+            controlPoint2.x = end.x + t;
+        
         
         [path addCurveToPoint:end controlPoint1:controlPoint1 controlPoint2:controlPoint2];
         [mutablePaths addObject:path];

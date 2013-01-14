@@ -13,6 +13,7 @@
 #import "SourceVO.h"
 #import "DataCell.h"
 #import <QuartzCore/QuartzCore.h>
+
 #define UIColorFromRGB(rgbValue) [UIColor \
 colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
@@ -81,18 +82,23 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self.sourcesTableBackView addSubview:sourcesTableNav.view];
     
     canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(0, 0, self.canvasBackView.frame.size.width -60, self.canvasBackView.frame.size.height)];
-    
-    canvasView.contentSize = self.canvasView.frame.size;
-    canvasView.backgroundColor = UIColorFromRGB(0xDDDF0D);
-    canvasView.showsHorizontalScrollIndicator = canvasView.showsVerticalScrollIndicator = YES;
+    canvasView.backgroundColor = [UIColor colorWithWhite:.95 alpha:1.0];
     canvasView.target =self;
     canvasView.layer.borderColor = [UIColor grayColor].CGColor;
     canvasView.layer.borderWidth = 1.0;
+    
+    // Add gradiant
+//    CAGradientLayer *gradient = [CAGradientLayer layer];
+//    gradient.frame = canvasView.bounds;
+//    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor darkGrayColor] CGColor],(id)[[UIColor colorWithWhite:0.9 alpha:0.5] CGColor], (id)[[UIColor colorWithWhite:0.4 alpha:0.5] CGColor], nil];
+//    [canvasView.layer insertSublayer:gradient atIndex:0];
+    
+
     [self.canvasBackView addSubview:canvasView];
     self.connectionListView = [[UIScrollView alloc] initWithFrame:CGRectMake(self.canvasBackView.frame.size.width -60, 0, 60, self.canvasBackView.frame.size.height)];
+    self.connectionListView.backgroundColor = [UIColor colorWithWhite:.73 alpha:1.0];//[UIColor darkGrayColor];
     connectionListView.layer.borderColor = [UIColor grayColor].CGColor;
     connectionListView.layer.borderWidth = 1.0;
-    self.connectionListView.backgroundColor =[UIColor whiteColor];
     [self.canvasBackView addSubview:self.connectionListView];
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFacetPanning:)];
     [self.sourcesTableBackView addGestureRecognizer:panGesture];
@@ -186,6 +192,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         
         connectionVo.fieldVO1 = (FieldVO *)initialDraggedCell.data;
         connectionVo.fieldVO2 = (FieldVO *)highlightedCell.data;
+        lastUsedConnectionColorIndex -= 2;
+        
+        
         [self addConnection:connectionVo];
 
     }
@@ -225,14 +234,17 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                  
                  UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:fieldTable];
                  // Create Delete Button for Field Table
-                 UIButton *button = [UIButton  buttonWithType:UIButtonTypeCustom];
-                 [button setTitle:@"X" forState:UIControlStateNormal];
-                 button.titleLabel.textColor = [UIColor blackColor];
+//                 UIButton *button = [UIButton  buttonWithType:UIButtonTypeCustom];
+//                 [button setTitle:@"X" forState:UIControlStateNormal];
+                 
+                 UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+                 [button setImage:[UIImage imageNamed:@"round_delete"] forState:UIControlStateNormal];
+                 //button.titleLabel.textColor = [UIColor blackColor];
                  [button setFrame:CGRectMake(0, 0, 20, 20)];
                  
                  UIBarButtonItem *deleteTableButton = [[UIBarButtonItem  alloc] initWithCustomView:button];
                  
-                 fieldTable.navigationItem.rightBarButtonItem = deleteTableButton;
+                 fieldTable.navigationItem.leftBarButtonItem = deleteTableButton;
                  
                  sourceValueTableNav.view.frame =CGRectMake(droppedAtPoint.x, droppedAtPoint.y,200, 200);
                  
@@ -241,9 +253,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                  //UITapGestureRecognizer *tapGesture =[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTappingCanvasTable:)];
                  int tag = BaseTagForCanvasTable + numberOfTablesExistInCanvasView ;
                  sourceValueTableNav.view.tag = tag;
-                 sourcesTableNav.view.alpha = .5;
                  [sourceValueTableNav.view addGestureRecognizer:panGesture];
                  sourceValueTableNav.navigationBar.tag =tag;
+                 sourceValueTableNav.view.layer.shadowColor = [UIColor grayColor].CGColor;
+                 sourceValueTableNav.view.layer.shadowOpacity = 1.0;
+                 sourceValueTableNav.view.layer.shadowOffset = CGSizeMake(5, 5);
                 // [sourceValueTableNav.navigationBar addGestureRecognizer:tapGesture];
                  [self.canvasView addSubview:sourceValueTableNav.view];
                  
@@ -500,7 +514,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
 }
 -(UIColor *)getConnectionColor{
-    lastUsedConnectionColorIndex++;
+    lastUsedConnectionColorIndex += 2 ;
     //NSMutableArray *colors = [[NSMutableArray alloc] init];
     //[NSMutableArray arrayWithObjects:@"0x55BF3B", @"0xDDDF0D", @"0x7798BF", @"0xDF5353", @"0xaaeeee", @"0xff0066", @"0xeeaaee",@"0x55BF3B", @"0xDF5353", @"0x7798BF", @"0xaaeeee", nil];
     
@@ -540,10 +554,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 
 -(void)reloadConnectionListView{
-    CGFloat xCoord= 0 ;
-    CGFloat yCoord= 0 ;
-    CGFloat height= 30;
-    CGFloat width = 60;
+    CGFloat xCoord= 5 ;
+    CGFloat yCoord= 10 ;
+    CGFloat height= 60;
+    CGFloat width = 55;
     CGFloat gap = 3;
     int tag = 0;
     //Clean Previous Connections.
@@ -557,26 +571,31 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         }
         UIView *connectionItemView= [[UIView alloc] initWithFrame:CGRectMake(xCoord, yCoord, width, height)];
         
+        
+
+        UIButton *highlightConnectionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        highlightConnectionButton.backgroundColor = connectionVO.connectionLineColor;
+        highlightConnectionButton.frame =  CGRectMake(13, 11, 35, 40);
+        highlightConnectionButton.tag = tag;
+        highlightConnectionButton.layer.borderColor = [UIColor whiteColor].CGColor;
+        highlightConnectionButton.layer.borderWidth = 1.0;
+        
+        [highlightConnectionButton addTarget:self action:@selector(setSelectedConnection:) forControlEvents:UIControlEventTouchDown];
+        [connectionItemView addSubview:highlightConnectionButton];
+        
         //Add X button
         UIButton *deleteConnectionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [deleteConnectionButton setTitle:@"X" forState:UIControlStateNormal];
-        deleteConnectionButton.titleLabel.textColor = [UIColor blackColor];
-        deleteConnectionButton.frame = CGRectMake(0, 2, 26, 26);
+        [deleteConnectionButton setImage:[UIImage imageNamed:@"round_delete"] forState:UIControlStateNormal];
+        deleteConnectionButton.frame = CGRectMake(0, 0, 22, 22);
+        deleteConnectionButton.center = highlightConnectionButton.frame.origin;
         deleteConnectionButton.tag = tag;
         [deleteConnectionButton addTarget:self action:@selector(deleteConnection:) forControlEvents:UIControlEventTouchDown];
         [connectionItemView addSubview:deleteConnectionButton];
         
-        
-        UIButton *highlightConnectionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        highlightConnectionButton.backgroundColor = connectionVO.connectionLineColor;
-        highlightConnectionButton.frame =  CGRectMake(30, 2, 26, 26);
-        highlightConnectionButton.tag = tag;
-        [highlightConnectionButton addTarget:self action:@selector(setSelectedConnection:) forControlEvents:UIControlEventTouchDown];
-        connectionItemView.backgroundColor = [UIColor colorWithRed:119.0/255.0 green:116.0/255.0 blue:231.0/255.0 alpha:1.0];
 //        connectionItemView.layer.borderWidth = 1.0;
 //        connectionItemView.layer.borderColor = [UIColor grayColor].CGColor;
         // [UIColor colorWithRed:119.0/255.0 green:116.0/255.0 blue:231.0/255.0 alpha:1.0];
-        [connectionItemView addSubview:highlightConnectionButton];
+        
         
         
         [self.connectionListView addSubview:connectionItemView];
@@ -631,14 +650,14 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
     for (UINavigationController *tableNav in canvasViewTablesDic.allValues) {
         FieldsTable *fieldsTable = (FieldsTable *)[tableNav topViewController];
-        CGPoint startingPointInTableNav = [gesture locationInView:fieldsTable.navigationItem.rightBarButtonItem.customView];
+        CGPoint startingPointInTableNav = [gesture locationInView:fieldsTable.navigationItem.leftBarButtonItem.customView];
         CGPoint startingPointInTableView = [gesture locationInView:tableNav.topViewController.view];
         
         
         if([tableNav.view pointInside:[gesture locationInView:tableNav.view] withEvent:nil]){
             [self handleTappingCanvasTable:gesture];
             
-            if([fieldsTable.navigationItem.rightBarButtonItem.customView  pointInside:startingPointInTableNav withEvent:nil]){
+            if([fieldsTable.navigationItem.leftBarButtonItem.customView  pointInside:startingPointInTableNav withEvent:nil]){
                 
                 //Handle Deletion of table here
                 

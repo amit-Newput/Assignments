@@ -154,13 +154,15 @@
 }
 
 -(void)handleTap:(UITapGestureRecognizer *)tap{
-    CGPoint target = [tap locationInView:self];
-    NSInteger index = -1;
-    int counter = 0;
     if([self.target respondsToSelector:@selector(handleTapOnCanvasView:)]){
         [self.target handleTapOnCanvasView:tap];
     }
     
+    /*
+    CGPoint target = [tap locationInView:self];
+    NSInteger index = -1;
+    int counter = 0;
+  
     for (UIBezierPath *path in pathArray) {
         if(CGPathContainsPoint(path.CGPath, &CGAffineTransformIdentity, target, NO)){
             
@@ -186,7 +188,7 @@
         
        
     }
-    
+    */
 }
 -(void)deleteConnection:(UIButton *)button{
     

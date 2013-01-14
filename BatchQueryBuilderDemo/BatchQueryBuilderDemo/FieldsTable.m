@@ -92,7 +92,6 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     // Configure the cell...
-    cell.contentView.alpha = .5;
     return cell;
 }
 

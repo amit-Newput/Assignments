@@ -88,9 +88,7 @@
     
     LineVO *objLineVO = [[LineVO alloc] initWithStartPoint1:startPoint1 startPoint2:startPoint2 endPoint1:endPoint1 endPoint2:endPoint2];
 	objLineVO.lineColor = self.connectionLineColor;
-    if ([self isTemporary]){
-        objLineVO.lineColor = [UIColor redColor];
-    }
+    
     objLineVO.lineWidth = 5.0;
     if(self.isLineSelected){
         objLineVO.lineWidth = 10.0;

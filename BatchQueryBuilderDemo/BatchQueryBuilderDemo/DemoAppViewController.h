@@ -27,6 +27,7 @@
 
 @property (strong) IBOutlet UIView *canvasBackView;
 @property (strong) IBOutlet UIView *sourcesTableBackView;
+@property (strong) UIScrollView   *connectionListView;
 @property (strong) NSMutableArray *sourceVOs;
 @property (strong) SourcesTable *sourcesTable;
 @property (strong) UINavigationController *sourcesTableNav;

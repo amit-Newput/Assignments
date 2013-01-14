@@ -291,16 +291,11 @@
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="canvasBackView">UIView</string>
-						<string key="sourceTableBackView">UIView</string>
 						<string key="sourcesTableBackView">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="canvasBackView">
 							<string key="name">canvasBackView</string>
-							<string key="candidateClassName">UIView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="sourceTableBackView">
-							<string key="name">sourceTableBackView</string>
 							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="sourcesTableBackView">

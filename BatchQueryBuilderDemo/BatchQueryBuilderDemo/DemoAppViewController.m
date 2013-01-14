@@ -12,6 +12,11 @@
 #import "FieldVO.h"
 #import "SourceVO.h"
 #import "DataCell.h"
+#import <QuartzCore/QuartzCore.h>
+#define UIColorFromRGB(rgbValue) [UIColor \
+colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 #define BaseTagForCanvasTable 1000
 //used  in dictionary as keys to store all tables and Connections
@@ -19,6 +24,7 @@
 #define kQueryBuilderSourceConnectionsKey @"CONNECTIONS"
 @interface DemoAppViewController (){
     int numberOfTablesExistInCanvasView;
+    int lastUsedConnectionColorIndex;
 }
 - (void)handleFacetPanning:(UIPanGestureRecognizer *)gesture;
 - (void)validateAndStartDragging:(UIPanGestureRecognizer *)gesture;
@@ -38,6 +44,7 @@
 @synthesize canvasView;
 @synthesize canvasViewTablesDic;
 @synthesize tagByTableNameMapping;
+@synthesize connectionListView;
 
 - (void)viewDidLoad
 {
@@ -73,14 +80,20 @@
     sourcesTableNav.view.frame = CGRectMake(0, 0, sourcesTableBackView.frame.size.width, sourcesTableBackView.frame.size.height);
     [self.sourcesTableBackView addSubview:sourcesTableNav.view];
     
-    canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(0, 0, self.canvasBackView.frame.size.width, self.canvasBackView.frame.size.height)];
+    canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(0, 0, self.canvasBackView.frame.size.width -60, self.canvasBackView.frame.size.height)];
     
     canvasView.contentSize = self.canvasView.frame.size;
-    canvasView.backgroundColor = [UIColor blueColor];
+    canvasView.backgroundColor = UIColorFromRGB(0xDDDF0D);
     canvasView.showsHorizontalScrollIndicator = canvasView.showsVerticalScrollIndicator = YES;
     canvasView.target =self;
+    canvasView.layer.borderColor = [UIColor grayColor].CGColor;
+    canvasView.layer.borderWidth = 1.0;
     [self.canvasBackView addSubview:canvasView];
-    
+    self.connectionListView = [[UIScrollView alloc] initWithFrame:CGRectMake(self.canvasBackView.frame.size.width -60, 0, 60, self.canvasBackView.frame.size.height)];
+    connectionListView.layer.borderColor = [UIColor grayColor].CGColor;
+    connectionListView.layer.borderWidth = 1.0;
+    self.connectionListView.backgroundColor =[UIColor whiteColor];
+    [self.canvasBackView addSubview:self.connectionListView];
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFacetPanning:)];
     [self.sourcesTableBackView addGestureRecognizer:panGesture];
     
@@ -90,7 +103,10 @@
     if (!self.connectionVOs) {
         self.connectionVOs = [NSMutableArray array];
     }
+    
     //[sourcesDic setObject:self.connectionVOs forKey:kQueryBuilderSourceConnectionsKey];
+    
+    lastUsedConnectionColorIndex = 0;
     
 }
 //code related to dragging Facets
@@ -183,8 +199,8 @@
 - (void) stopDragging:(UIPanGestureRecognizer *)gesture{
      if(draggedCell != nil){
          
-         CGPoint droppedAtPoint = [gesture locationInView:self.canvasBackView];
-         if ([self.canvasBackView pointInside:droppedAtPoint withEvent:nil]) {
+         CGPoint droppedAtPoint = [gesture locationInView:self.canvasView];
+         if ([self.canvasView pointInside:droppedAtPoint withEvent:nil]) {
              SourceVO  *sourceVO = nil;
  
              
@@ -306,21 +322,19 @@
 }
 -(void) dragCanvasObject:(UIPanGestureRecognizer *)gesture{
     if(draggedTableNav){
-          CGPoint translation = [gesture translationInView:[draggedTableNav.view superview]];
-        [UIView animateWithDuration:0.05 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-             [draggedTableNav.view setCenter:CGPointMake(draggedTableNav.view.center.x+translation.x, draggedTableNav.view.center.y+translation.y)];
-        } completion:^(BOOL finished){
-            // if you want to do something once the animation finishes, put it here
-        }];
-      
-       
+        CGPoint translation = [gesture translationInView:[draggedTableNav.view superview]];
+        CGFloat testX = translation.x + draggedTableNav.view.frame.origin.x;
+        CGFloat testY = translation.y + draggedTableNav.view.frame.origin.y;
+        if(testX < 0)
+            translation.x = translation.x  - testX;
+        if(testY <0)
+            translation.y = translation.y - testY;
+        [draggedTableNav.view setCenter:CGPointMake(draggedTableNav.view.center.x+translation.x , draggedTableNav.view.center.y+translation.y)];
+        
 		[gesture setTranslation:CGPointZero inView:[draggedTableNav.view superview]];
         
-        CGPoint draggedViewExtremePoint = CGPointMake(draggedTableNav.view.frame.origin.x + draggedTableNav.view.frame.size.width, draggedTableNav.view.frame.origin.y + draggedTableNav.view.frame.size.height);
-        
-        //This translation is required for this point containment check in Canvas View
-        //CGPoint translatedExtremePoint = [self.canvasBackView convertPoint:draggedViewExtremePoint fromView:self.canvasView];
-        [self updateContentSizeForCanvasView:draggedViewExtremePoint];
+        [self updateCanvasViewContentSize];
+        [self.canvasView scrollRectToVisible:draggedTableNav.view.frame animated:YES];
 
     }else if(draggedCell){
         
@@ -477,14 +491,34 @@
     }
     
     self.canvasView.lines = [NSArray arrayWithArray:lines];
-    
-    
 }
 #pragma mark FieldsTable delegate methods
 -(void)fieldsTableDidScroll:(FieldsTable *)tableVC{
     [self redrawCanvasView];
     //NSLog(@"%@",NSStringFromCGPoint([self.canvasView convertPoint:tableVC.tableView.frame.origin fromView:tableVC.tableView.superview]));
     
+    
+}
+-(UIColor *)getConnectionColor{
+    lastUsedConnectionColorIndex++;
+    //NSMutableArray *colors = [[NSMutableArray alloc] init];
+    //[NSMutableArray arrayWithObjects:@"0x55BF3B", @"0xDDDF0D", @"0x7798BF", @"0xDF5353", @"0xaaeeee", @"0xff0066", @"0xeeaaee",@"0x55BF3B", @"0xDF5353", @"0x7798BF", @"0xaaeeee", nil];
+    
+    //    [colors addObject:[UIColor colorWithRed:221/255 green:223/255 blue:13/255 alpha:1.0]];
+    //    [colors addObject:[UIColor colorWithRed:85/255 green:191/255 blue:50/255 alpha:1.0]];
+    //    [colors addObject:[UIColor colorWithRed:119/255 green:152/255 blue:191/255 alpha:1.0]];
+    
+
+//    NSString *colorToUse = [colors objectAtIndex:lastUsedConnectionColorIndex%colors.count] ;
+//    [NSString stringWithFormat:@"%qx", [number longLongValue]];
+//    UIColor *connectionColor = UIColorFromRGB();
+   
+    CGFloat redColorValue = (lastUsedConnectionColorIndex * 40) % 255;
+    CGFloat greenColorValue = (lastUsedConnectionColorIndex * 20 + 150) % 255 ;
+    CGFloat blueColorValue = (lastUsedConnectionColorIndex * 10 + 120) % 255 ;
+    UIColor *connectionColor = [UIColor colorWithRed:redColorValue/255 green:greenColorValue/255 blue:blueColorValue/255 alpha:1.0];
+    // NSLog(@" Red % f, Green %f , Blue : %f", redColorValue,greenColorValue,blueColorValue);
+    return connectionColor;
     
 }
 
@@ -497,8 +531,77 @@
         }
     }
     if (shouldAdd) {
+        conn.connectionLineColor = [self getConnectionColor];
         [self.connectionVOs addObject:conn];
+        [self reloadConnectionListView];
     }
+    
+}
+
+
+-(void)reloadConnectionListView{
+    CGFloat xCoord= 0 ;
+    CGFloat yCoord= 0 ;
+    CGFloat height= 30;
+    CGFloat width = 60;
+    CGFloat gap = 3;
+    int tag = 0;
+    //Clean Previous Connections.
+    for (UIView *newView in self.connectionListView.subviews) {
+        [newView removeFromSuperview];
+    }
+    for (int i=0; i< self.connectionVOs.count; i++) {
+        ConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:i];
+        if([connectionVO isTemporary]){
+            continue;
+        }
+        UIView *connectionItemView= [[UIView alloc] initWithFrame:CGRectMake(xCoord, yCoord, width, height)];
+        
+        //Add X button
+        UIButton *deleteConnectionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [deleteConnectionButton setTitle:@"X" forState:UIControlStateNormal];
+        deleteConnectionButton.titleLabel.textColor = [UIColor blackColor];
+        deleteConnectionButton.frame = CGRectMake(0, 2, 26, 26);
+        deleteConnectionButton.tag = tag;
+        [deleteConnectionButton addTarget:self action:@selector(deleteConnection:) forControlEvents:UIControlEventTouchDown];
+        [connectionItemView addSubview:deleteConnectionButton];
+        
+        
+        UIButton *highlightConnectionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        highlightConnectionButton.backgroundColor = connectionVO.connectionLineColor;
+        highlightConnectionButton.frame =  CGRectMake(30, 2, 26, 26);
+        highlightConnectionButton.tag = tag;
+        [highlightConnectionButton addTarget:self action:@selector(setSelectedConnection:) forControlEvents:UIControlEventTouchDown];
+        connectionItemView.backgroundColor = [UIColor colorWithRed:119.0/255.0 green:116.0/255.0 blue:231.0/255.0 alpha:1.0];
+//        connectionItemView.layer.borderWidth = 1.0;
+//        connectionItemView.layer.borderColor = [UIColor grayColor].CGColor;
+        // [UIColor colorWithRed:119.0/255.0 green:116.0/255.0 blue:231.0/255.0 alpha:1.0];
+        [connectionItemView addSubview:highlightConnectionButton];
+        
+        
+        [self.connectionListView addSubview:connectionItemView];
+        yCoord += height + gap;
+        tag++;
+    }
+    yCoord += height;
+    [self.connectionListView setContentSize:CGSizeMake(60, yCoord)];
+
+}
+
+-(void)setSelectedConnection:(UIButton *)button{
+    for (ConnectionVO *newConnection in self.connectionVOs) {
+        newConnection.isLineSelected = NO;
+    }
+   // NSLog(@"New Connection %d",button.tag);
+    ConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:button.tag];
+    connectionVO.isLineSelected = YES;
+    //connectionVO.connectionLineColor = [UIColor redColor];
+    [self redrawCanvasView];
+}
+
+-(void)deleteConnection:(UIButton *)button{
+    
+    [self removeConnectionAtIndex:button.tag];
 }
 // Index of line array in Canvas View and index of corrosponding connection VOs should be same
 -(void)removeConnectionAtIndex:(int)index{
@@ -506,6 +609,7 @@
         [self.connectionVOs removeObjectAtIndex:index];
     }
     [self redrawCanvasView];
+    [self reloadConnectionListView];
 }
 
 -(void)removeTemporaryConnections{
@@ -571,5 +675,26 @@
         [newConnectionVOs addObject:connectionVO];
     }
     self.connectionVOs = newConnectionVOs;
+    [self reloadConnectionListView];
+}
+
+-(void)updateCanvasViewContentSize{
+    
+    CGSize size = self.canvasView.frame.size;
+    NSArray *tableNavs = [self.canvasViewTablesDic allValues];
+    for (UIViewController *viewController in tableNavs) {
+        UIView *view = viewController.view;
+        CGFloat exX = view.frame.origin.x+view.frame.size.width;
+        if (exX > size.width) {
+            size.width = exX;
+        }
+        CGFloat exY = view.frame.origin.y+view.frame.size.height;
+        if (exY > size.height) {
+            size.height = exY;
+        }
+        
+        
+    }
+    self.canvasView.contentSize = size;
 }
 @end

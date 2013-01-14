@@ -135,18 +135,21 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetStrokeColorWithColor(context, lineColor.CGColor);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
-     CGContextSetLineWidth(context, lineWidth);
+    
     
     int counter = 0;
     for (UIBezierPath *path in pathArray) {
+        
+        LineVO *lineVO = [lines objectAtIndex:counter];
+        CGContextSetStrokeColorWithColor(context, lineVO.lineColor.CGColor);
+         CGContextSetLineWidth(context, lineVO.lineWidth);
         CGContextAddPath(context, path.CGPath);
-
         counter++;
+        CGContextDrawPath(context, kCGPathEOFillStroke);
     }
     
-    CGContextDrawPath(context, kCGPathEOFillStroke);
+   
     
 }
 

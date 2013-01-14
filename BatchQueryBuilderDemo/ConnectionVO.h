@@ -16,9 +16,12 @@
 @property (strong) UIView *cell2;
 @property (strong) FieldVO *fieldVO1;
 @property (strong) FieldVO *fieldVO2;
+@property (strong) UIColor *connectionLineColor;
+@property BOOL isLineSelected;
 
 
 -(LineVO *) getLineVOForView:(UIView *)view;
 -(BOOL)isEqualToConnection:(ConnectionVO *)connection;
 -(BOOL)isTemporary;
+
 @end

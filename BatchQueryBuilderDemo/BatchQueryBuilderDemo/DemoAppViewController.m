@@ -256,7 +256,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                  [sourceValueTableNav.view addGestureRecognizer:panGesture];
                  sourceValueTableNav.navigationBar.tag =tag;
                  sourceValueTableNav.view.layer.shadowColor = [UIColor grayColor].CGColor;
-                 sourceValueTableNav.view.layer.shadowOpacity = 1.0;
+                 sourceValueTableNav.view.layer.shadowOpacity = .5;
                  sourceValueTableNav.view.layer.shadowOffset = CGSizeMake(5, 5);
                 // [sourceValueTableNav.navigationBar addGestureRecognizer:tapGesture];
                  [self.canvasView addSubview:sourceValueTableNav.view];

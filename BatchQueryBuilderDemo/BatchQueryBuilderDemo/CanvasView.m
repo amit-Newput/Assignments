@@ -53,8 +53,8 @@
         CGPoint start = line.startPoint;
         CGPoint end = line.endPoint;
         
-        //UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:start radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
-        UIBezierPath *path = [UIBezierPath bezierPath];
+        UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:start radius:lineWidth startAngle:0 endAngle:180*M_1_PI clockwise:YES];
+        //UIBezierPath *path = [UIBezierPath bezierPath];
         path.lineWidth = lineWidth;
         [path moveToPoint:start];
         CGPoint controlPoint1 = start;
@@ -76,7 +76,7 @@
         
         
         [path addCurveToPoint:end controlPoint1:controlPoint1 controlPoint2:controlPoint2];
-        //[path addArcWithCenter:end radius:lineWidth startAngle:0 endAngle:360.0/M_1_PI clockwise:YES];
+        [path addArcWithCenter:end radius:lineWidth startAngle:0 endAngle:180*M_1_PI clockwise:YES];
         [mutablePaths addObject:path];
     }
     pathArray = [NSArray arrayWithArray:mutablePaths];

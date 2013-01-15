@@ -136,7 +136,7 @@
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
-    
+        
     
     int counter = 0;
     for (UIBezierPath *path in pathArray) {
@@ -146,11 +146,8 @@
          CGContextSetLineWidth(context, lineVO.lineWidth);
         CGContextAddPath(context, path.CGPath);
         counter++;
-        CGContextDrawPath(context, kCGPathEOFillStroke);
+        CGContextDrawPath(context, kCGPathStroke);
     }
-    
-   
-    
 }
 
 -(void)handleTap:(UITapGestureRecognizer *)tap{
@@ -158,13 +155,13 @@
         [self.target handleTapOnCanvasView:tap];
     }
     
-    /*
+    
     CGPoint target = [tap locationInView:self];
     NSInteger index = -1;
     int counter = 0;
   
     for (UIBezierPath *path in pathArray) {
-        if(CGPathContainsPoint(path.CGPath, &CGAffineTransformIdentity, target, NO)){
+        if([self containsPoint:target onPath:path inFillArea:NO]){
             
             index = counter;
             break;
@@ -173,7 +170,10 @@
     }
     if (index != -1) {
         NSLog(@"line selected: %d",index);
-        if(self.deleteButton){
+        if ([self.target respondsToSelector:@selector(canvasView:lineSelectedAtIndex:)]) {
+            [self.target canvasView:self lineSelectedAtIndex:index];
+        }
+        /*if(self.deleteButton){
             [self.deleteButton removeFromSuperview];
             self.deleteButton =nil;
         }
@@ -184,11 +184,65 @@
         [self.deleteButton addTarget:self action:@selector(deleteConnection:) forControlEvents:UIControlEventTouchDown];
         [self addSubview:self.deleteButton];
         self.deleteButton.tag = index;
+         */
         
         
        
     }
-    */
+    
+}
+- (BOOL)containsPoint:(CGPoint)point onPath:(UIBezierPath*)path inFillArea:(BOOL)inFill
+{
+    UIGraphicsBeginImageContext(self.frame.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGPathRef cgPath = path.CGPath;
+    BOOL    isHit = NO;
+    
+    // Determine the drawing mode to use. Default to
+    // detecting hits on the stroked portion of the path.
+    CGPathDrawingMode mode = kCGPathStroke;
+    if (inFill)
+    {
+        // Look for hits in the fill area of the path instead.
+        if (path.usesEvenOddFillRule)
+            mode = kCGPathEOFill;
+        else
+            mode = kCGPathFill;
+    }
+    
+    // Save the graphics state so that the path can be
+    // removed later.
+    CGContextSaveGState(context);
+    CGContextAddPath(context, cgPath);
+    
+    // Do the hit detection.
+    for (int i =1; i<=5; i++) {
+        CGPoint t = CGPointMake(point.x, point.y+i);
+        isHit = CGContextPathContainsPoint(context, t, mode);
+        if (isHit) {
+            break;
+        }
+        t = CGPointMake(point.x+i, point.y);
+        isHit = CGContextPathContainsPoint(context, t, mode);
+        if (isHit) {
+            break;
+        }
+        t = CGPointMake(point.x-i, point.y);
+        isHit = CGContextPathContainsPoint(context, t, mode);
+        if (isHit) {
+            break;
+        }
+        t = CGPointMake(point.x, point.y-i);
+        isHit = CGContextPathContainsPoint(context, t, mode);
+        if (isHit) {
+            break;
+        }
+        
+    }
+    
+    CGContextRestoreGState(context);
+    CFRelease(context);
+    return isHit;
 }
 -(void)deleteConnection:(UIButton *)button{
     

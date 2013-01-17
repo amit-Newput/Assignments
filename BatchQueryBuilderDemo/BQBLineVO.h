@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface LineVO : NSObject
+@interface BQBLineVO : NSObject
 
 @property CGPoint startPoint1;
 @property CGPoint startPoint2;

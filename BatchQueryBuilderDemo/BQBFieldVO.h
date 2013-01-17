@@ -7,14 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SourceVO.h"
+#import "BQBSourceVO.h"
 
  typedef enum {
     FieldTypeNumeric ,
     FieldTypeString
 } FieldType;
 
-@interface FieldVO : NSObject
+@interface BQBFieldVO : NSObject
 
 @property (strong) NSString *name;
 @property (strong) NSString *fieldID;
@@ -23,5 +23,5 @@
 @property (strong) NSString *alias;
 @property (strong) NSString *aggregateFunction;
 @property (strong) NSString *criteria;
-@property (strong) SourceVO *sourceVO;
+@property (strong) BQBSourceVO *sourceVO;
 @end

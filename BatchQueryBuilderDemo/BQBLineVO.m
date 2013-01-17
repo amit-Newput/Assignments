@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 Prateek Pradhan. All rights reserved.
 //
 
-#import "LineVO.h"
+#import "BQBLineVO.h"
 
-@implementation LineVO
+@implementation BQBLineVO
 
 -(id)initWithStartPoint1:(CGPoint)sp1 startPoint2:(CGPoint)sp2 endPoint1:(CGPoint)ep1 endPoint2:(CGPoint)ep2{
     if (self = [super init]) {

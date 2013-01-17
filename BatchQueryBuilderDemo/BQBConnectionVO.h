@@ -7,21 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "LineVO.h"
-#import "FieldVO.h"
+#import "BQBLineVO.h"
+#import "BQBFieldVO.h"
 
-@interface ConnectionVO : NSObject
+@interface BQBConnectionVO : NSObject
 
 @property (strong) UIView *cell1;
 @property (strong) UIView *cell2;
-@property (strong) FieldVO *fieldVO1;
-@property (strong) FieldVO *fieldVO2;
+@property (strong) BQBFieldVO *fieldVO1;
+@property (strong) BQBFieldVO *fieldVO2;
 @property (strong) UIColor *connectionLineColor;
 @property BOOL isLineSelected;
 
 
--(LineVO *) getLineVOForView:(UIView *)view;
--(BOOL)isEqualToConnection:(ConnectionVO *)connection;
+-(BQBLineVO *) getLineVOForView:(UIView *)view;
+-(BOOL)isEqualToConnection:(BQBConnectionVO *)connection;
 -(BOOL)isTemporary;
 
 @end

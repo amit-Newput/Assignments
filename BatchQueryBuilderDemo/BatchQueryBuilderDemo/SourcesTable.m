@@ -8,7 +8,7 @@
 
 #import "SourcesTable.h"
 #import "FieldsTable.h"
-#import "SourceVO.h"
+#import "BQBSourceVO.h"
 #import "DataCell.h"
 
 @interface SourcesTable ()
@@ -93,7 +93,7 @@
         cell = [[DataCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    SourceVO *sourceVO = [self.sourceVOs  objectAtIndex:indexPath.row];
+    BQBSourceVO *sourceVO = [self.sourceVOs  objectAtIndex:indexPath.row];
     cell.data = sourceVO;
     cell.textLabel.text = sourceVO.name;
     

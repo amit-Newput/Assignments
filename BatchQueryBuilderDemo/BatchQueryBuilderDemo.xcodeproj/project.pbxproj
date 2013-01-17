@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		61D9266F169DA516004A856D /* ConnectionVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9266E169DA516004A856D /* ConnectionVO.m */; };
-		61D9267B169FEB85004A856D /* FieldVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9267A169FEB84004A856D /* FieldVO.m */; };
-		61D9267F169FEDD9004A856D /* SourceVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9267E169FEDD9004A856D /* SourceVO.m */; };
+		6141E3CE16A7CC5D00BC335C /* BQBDataVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 6141E3CD16A7CC5D00BC335C /* BQBDataVO.m */; };
+		61D9266F169DA516004A856D /* BQBConnectionVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9266E169DA516004A856D /* BQBConnectionVO.m */; };
+		61D9267B169FEB85004A856D /* BQBFieldVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9267A169FEB84004A856D /* BQBFieldVO.m */; };
+		61D9267F169FEDD9004A856D /* BQBSourceVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9267E169FEDD9004A856D /* BQBSourceVO.m */; };
 		61D9268216A01587004A856D /* DataCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 61D9268116A01586004A856D /* DataCell.m */; };
 		FB9ABA34169C247200CE14F4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA33169C247200CE14F4 /* UIKit.framework */; };
 		FB9ABA36169C247200CE14F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB9ABA35169C247200CE14F4 /* Foundation.framework */; };
@@ -27,18 +28,20 @@
 		FB9ABA5D169C35F600CE14F4 /* SourcesTable.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA5B169C35F600CE14F4 /* SourcesTable.xib */; };
 		FB9ABA61169C362100CE14F4 /* FieldsTable.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA5F169C362000CE14F4 /* FieldsTable.m */; };
 		FB9ABA62169C362100CE14F4 /* FieldsTable.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA60169C362000CE14F4 /* FieldsTable.xib */; };
-		FBB1BBE2169D620500AFFAE7 /* LineVO.m in Sources */ = {isa = PBXBuildFile; fileRef = FBB1BBE1169D620500AFFAE7 /* LineVO.m */; };
+		FBB1BBE2169D620500AFFAE7 /* BQBLineVO.m in Sources */ = {isa = PBXBuildFile; fileRef = FBB1BBE1169D620500AFFAE7 /* BQBLineVO.m */; };
 		FBB1BC2416A4324100AFFAE7 /* round_delete.png in Resources */ = {isa = PBXBuildFile; fileRef = FBB1BC2316A4324000AFFAE7 /* round_delete.png */; };
 		FBB1BC2E16A43B1D00AFFAE7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB1BC2D16A43B1D00AFFAE7 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		61D9266D169DA516004A856D /* ConnectionVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionVO.h; sourceTree = "<group>"; };
-		61D9266E169DA516004A856D /* ConnectionVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionVO.m; sourceTree = "<group>"; };
-		61D92679169FEB84004A856D /* FieldVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldVO.h; sourceTree = "<group>"; };
-		61D9267A169FEB84004A856D /* FieldVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldVO.m; sourceTree = "<group>"; };
-		61D9267D169FEDD9004A856D /* SourceVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceVO.h; sourceTree = "<group>"; };
-		61D9267E169FEDD9004A856D /* SourceVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceVO.m; sourceTree = "<group>"; };
+		6141E3CC16A7CC5D00BC335C /* BQBDataVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BQBDataVO.h; sourceTree = "<group>"; };
+		6141E3CD16A7CC5D00BC335C /* BQBDataVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BQBDataVO.m; sourceTree = "<group>"; };
+		61D9266D169DA516004A856D /* BQBConnectionVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BQBConnectionVO.h; sourceTree = "<group>"; };
+		61D9266E169DA516004A856D /* BQBConnectionVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BQBConnectionVO.m; sourceTree = "<group>"; };
+		61D92679169FEB84004A856D /* BQBFieldVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BQBFieldVO.h; sourceTree = "<group>"; };
+		61D9267A169FEB84004A856D /* BQBFieldVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BQBFieldVO.m; sourceTree = "<group>"; };
+		61D9267D169FEDD9004A856D /* BQBSourceVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BQBSourceVO.h; sourceTree = "<group>"; };
+		61D9267E169FEDD9004A856D /* BQBSourceVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BQBSourceVO.m; sourceTree = "<group>"; };
 		61D9268016A01586004A856D /* DataCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataCell.h; sourceTree = "<group>"; };
 		61D9268116A01586004A856D /* DataCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataCell.m; sourceTree = "<group>"; };
 		FB9ABA2F169C247200CE14F4 /* BatchQueryBuilderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatchQueryBuilderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,8 +68,8 @@
 		FB9ABA5E169C362000CE14F4 /* FieldsTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldsTable.h; sourceTree = "<group>"; };
 		FB9ABA5F169C362000CE14F4 /* FieldsTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldsTable.m; sourceTree = "<group>"; };
 		FB9ABA60169C362000CE14F4 /* FieldsTable.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FieldsTable.xib; sourceTree = "<group>"; };
-		FBB1BBE0169D620500AFFAE7 /* LineVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineVO.h; sourceTree = "<group>"; };
-		FBB1BBE1169D620500AFFAE7 /* LineVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineVO.m; sourceTree = "<group>"; };
+		FBB1BBE0169D620500AFFAE7 /* BQBLineVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BQBLineVO.h; sourceTree = "<group>"; };
+		FBB1BBE1169D620500AFFAE7 /* BQBLineVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BQBLineVO.m; sourceTree = "<group>"; };
 		FBB1BC2316A4324000AFFAE7 /* round_delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = round_delete.png; sourceTree = "<group>"; };
 		FBB1BC2D16A43B1D00AFFAE7 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -89,14 +92,16 @@
 		FB9ABA24169C247200CE14F4 = {
 			isa = PBXGroup;
 			children = (
-				61D9267D169FEDD9004A856D /* SourceVO.h */,
-				61D9267E169FEDD9004A856D /* SourceVO.m */,
-				61D92679169FEB84004A856D /* FieldVO.h */,
-				61D9267A169FEB84004A856D /* FieldVO.m */,
-				61D9266D169DA516004A856D /* ConnectionVO.h */,
-				61D9266E169DA516004A856D /* ConnectionVO.m */,
-				FBB1BBE0169D620500AFFAE7 /* LineVO.h */,
-				FBB1BBE1169D620500AFFAE7 /* LineVO.m */,
+				6141E3CC16A7CC5D00BC335C /* BQBDataVO.h */,
+				6141E3CD16A7CC5D00BC335C /* BQBDataVO.m */,
+				61D9267D169FEDD9004A856D /* BQBSourceVO.h */,
+				61D9267E169FEDD9004A856D /* BQBSourceVO.m */,
+				61D92679169FEB84004A856D /* BQBFieldVO.h */,
+				61D9267A169FEB84004A856D /* BQBFieldVO.m */,
+				61D9266D169DA516004A856D /* BQBConnectionVO.h */,
+				61D9266E169DA516004A856D /* BQBConnectionVO.m */,
+				FBB1BBE0169D620500AFFAE7 /* BQBLineVO.h */,
+				FBB1BBE1169D620500AFFAE7 /* BQBLineVO.m */,
 				FB9ABA39169C247200CE14F4 /* BatchQueryBuilderDemo */,
 				FB9ABA32169C247200CE14F4 /* Frameworks */,
 				FB9ABA30169C247200CE14F4 /* Products */,
@@ -236,11 +241,12 @@
 				FB9ABA58169C32C000CE14F4 /* CanvasView.m in Sources */,
 				FB9ABA5C169C35F600CE14F4 /* SourcesTable.m in Sources */,
 				FB9ABA61169C362100CE14F4 /* FieldsTable.m in Sources */,
-				FBB1BBE2169D620500AFFAE7 /* LineVO.m in Sources */,
-				61D9266F169DA516004A856D /* ConnectionVO.m in Sources */,
-				61D9267B169FEB85004A856D /* FieldVO.m in Sources */,
-				61D9267F169FEDD9004A856D /* SourceVO.m in Sources */,
+				FBB1BBE2169D620500AFFAE7 /* BQBLineVO.m in Sources */,
+				61D9266F169DA516004A856D /* BQBConnectionVO.m in Sources */,
+				61D9267B169FEB85004A856D /* BQBFieldVO.m in Sources */,
+				61D9267F169FEDD9004A856D /* BQBSourceVO.m in Sources */,
 				61D9268216A01587004A856D /* DataCell.m in Sources */,
+				6141E3CE16A7CC5D00BC335C /* BQBDataVO.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

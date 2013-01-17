@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 Prateek Pradhan. All rights reserved.
 //
 
-#import "ConnectionVO.h"
+#import "BQBConnectionVO.h"
 
-@interface ConnectionVO()
+@interface BQBConnectionVO()
 
 {
     // Below four points stores the cell position before going out of table view
@@ -26,10 +26,10 @@
 
 @end
 
-@implementation ConnectionVO
+@implementation BQBConnectionVO
 
 
--(LineVO *) getLineVOForView: (UIView*)view{
+-(BQBLineVO *) getLineVOForView: (UIView*)view{
     
     CGPoint startPoint1 = CGPointMake(self.cell1.frame.origin.x  ,self.cell1.frame.origin.y + (self.cell1.frame.size.height /2) );
     CGPoint startPoint2 = CGPointMake((self.cell1.frame.origin.x-1 + self.cell1.frame.size.width) ,(self.cell1.frame.origin.y + (self.cell1.frame.size.height)/2) );
@@ -86,7 +86,7 @@
         endPoint2.y = (fromView2TranslatedRect.origin.y + fromView2TranslatedRect.size.height-1);
     }
     
-    LineVO *objLineVO = [[LineVO alloc] initWithStartPoint1:startPoint1 startPoint2:startPoint2 endPoint1:endPoint1 endPoint2:endPoint2];
+    BQBLineVO *objLineVO = [[BQBLineVO alloc] initWithStartPoint1:startPoint1 startPoint2:startPoint2 endPoint1:endPoint1 endPoint2:endPoint2];
 	objLineVO.lineColor = self.connectionLineColor;
     
     objLineVO.lineWidth = 5.0;
@@ -96,7 +96,7 @@
     return objLineVO;
 }
 
--(BOOL)isEqualToConnection:(ConnectionVO *)connection{
+-(BOOL)isEqualToConnection:(BQBConnectionVO *)connection{
     
     // There are two fields Ids in self and two in connection. So total there will be four combinations. Below we
     // are checking those combinations.

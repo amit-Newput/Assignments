@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SourceVO : NSObject
+@interface BQBSourceVO : NSObject
 @property (strong) NSString *name;
 @property (strong) NSString *sourceID;
 @property (strong) NSMutableArray *fieldVOs;

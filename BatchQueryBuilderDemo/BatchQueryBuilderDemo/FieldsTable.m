@@ -7,7 +7,7 @@
 //
 
 #import "FieldsTable.h"
-#import "FieldVO.h"
+#import "BQBFieldVO.h"
 #import "DataCell.h"
 
 
@@ -23,7 +23,7 @@
     return self;
 }
 
-- (id)initWithSourceVO:(SourceVO *)paramSourceVO
+- (id)initWithSourceVO:(BQBSourceVO *)paramSourceVO
 {
     self = [super init];
     if (self) {
@@ -45,7 +45,7 @@
 }
 
 
--(void) valueSelected: (FieldVO*)paramFieldVO{
+-(void) valueSelected: (BQBFieldVO*)paramFieldVO{
     paramFieldVO.isSelected = YES;
     [self.tableView reloadData];
     
@@ -80,7 +80,7 @@
     if (cell == nil) {
         cell = [[DataCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    FieldVO * fieldVO = [self.sourceVO.fieldVOs objectAtIndex:indexPath.row];
+    BQBFieldVO * fieldVO = [self.sourceVO.fieldVOs objectAtIndex:indexPath.row];
     cell.data = fieldVO;
     cell.textLabel.text = fieldVO.name;
     
@@ -145,7 +145,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DataCell *cell  = (DataCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-    FieldVO * fieldVO = [self.sourceVO.fieldVOs objectAtIndex:indexPath.row];
+    BQBFieldVO * fieldVO = [self.sourceVO.fieldVOs objectAtIndex:indexPath.row];
     
     if(cell.accessoryType == UITableViewCellAccessoryCheckmark){
         cell.accessoryType = UITableViewCellAccessoryNone;

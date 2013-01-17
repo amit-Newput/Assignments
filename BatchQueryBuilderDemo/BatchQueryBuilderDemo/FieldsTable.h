@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SourceVO.h"
-#import "FieldVO.h"
+#import "BQBSourceVO.h"
+#import "BQBFieldVO.h"
 
 @class FieldsTable;
 
@@ -21,10 +21,10 @@
 @interface FieldsTable : UITableViewController{
    
 }
-@property (strong) SourceVO *sourceVO;
+@property (strong) BQBSourceVO *sourceVO;
 @property (strong) id<FieldsTableDelegate>delegate;
 
-- (id)initWithSourceVO:(SourceVO *)sourceVO ;
--(void) valueSelected: (FieldVO *)valueName;
+- (id)initWithSourceVO:(BQBSourceVO *)sourceVO ;
+-(void) valueSelected: (BQBFieldVO *)valueName;
 -(void) toggleTableRowSelection:(NSIndexPath *)indexPath;
 @end

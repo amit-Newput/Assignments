@@ -8,9 +8,9 @@
 
 #import "DemoAppViewController.h"
 #import "canvasView.h"
-#import "ConnectionVO.h"
-#import "FieldVO.h"
-#import "SourceVO.h"
+#import "BQBConnectionVO.h"
+#import "BQBFieldVO.h"
+#import "BQBSourceVO.h"
 #import "DataCell.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -57,11 +57,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
     for ( int i =1 ;i<=3;++i){
          NSMutableArray *fieldVOs = [[NSMutableArray alloc] init ];
-        SourceVO * sourceVO = [[SourceVO alloc] init];
+        BQBSourceVO * sourceVO = [[BQBSourceVO alloc] init];
         sourceVO.name =[@"table" stringByAppendingString: [NSString stringWithFormat:@"%d",i]];
         sourceVO.sourceID = sourceVO.name;
         for( int j= 1;j<=12; ++j){
-            FieldVO * fieldVO = [[FieldVO alloc] init];
+            BQBFieldVO * fieldVO = [[BQBFieldVO alloc] init];
             fieldVO.sourceVO = sourceVO ;
             fieldVO.type = FieldTypeString;
             fieldVO.isSelected = false;
@@ -185,13 +185,13 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 -(void)stopCanvasDragging:(UIPanGestureRecognizer *)gesture{
     highlightedCell.highlighted = NO;
     if (draggedCell && highlightedCell && initialDraggedCell.data != highlightedCell.data) {
-        ConnectionVO *connectionVo = [[ConnectionVO alloc] init];
+        BQBConnectionVO *connectionVo = [[BQBConnectionVO alloc] init];
         connectionVo.cell1 = initialDraggedCell;
         connectionVo.cell2 = highlightedCell;
         //Later following two fields will be replaced by VO's
         
-        connectionVo.fieldVO1 = (FieldVO *)initialDraggedCell.data;
-        connectionVo.fieldVO2 = (FieldVO *)highlightedCell.data;
+        connectionVo.fieldVO1 = (BQBFieldVO *)initialDraggedCell.data;
+        connectionVo.fieldVO2 = (BQBFieldVO *)highlightedCell.data;
         lastUsedConnectionColorIndex -= 2;
         
         
@@ -210,18 +210,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
          
          CGPoint droppedAtPoint = [gesture locationInView:self.canvasView];
          if ([self.canvasView pointInside:droppedAtPoint withEvent:nil]) {
-             SourceVO  *sourceVO = nil;
+             BQBSourceVO  *sourceVO = nil;
  
              
              // Determine whether user has dragged the table or a field of the table.
             // if([draggedTable isKindOfClass:[SourcesTable class]]){
-             if([draggedCell.data isKindOfClass:[SourceVO class]]){
+             if([draggedCell.data isKindOfClass:[BQBSourceVO class]]){
      
-                 sourceVO = (SourceVO *) draggedCell.data ;
+                 sourceVO = (BQBSourceVO *) draggedCell.data ;
                  
                 
              }else{
-                 FieldVO *tempFieldVO = (FieldVO *)draggedCell.data;
+                 BQBFieldVO *tempFieldVO = (BQBFieldVO *)draggedCell.data;
                  sourceVO = tempFieldVO.sourceVO;
              }
              //Determine whether to create a new table on canvas or not.
@@ -265,10 +265,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                  [tagByTableNameMapping setObject:sourceVO.sourceID forKey:[NSString stringWithFormat:@"%d",tag]];
                  numberOfTablesExistInCanvasView++;
              }
-             if([draggedCell.data isKindOfClass:[FieldVO class]]){
+             if([draggedCell.data isKindOfClass:[BQBFieldVO class]]){
               //Get the value table to be updated
                  
-                 FieldVO *tempFieldVO = (FieldVO *) draggedCell.data;
+                 BQBFieldVO *tempFieldVO = (BQBFieldVO *) draggedCell.data;
                  FieldsTable *existingFieldsTable = (FieldsTable *)[[canvasViewTablesDic objectForKey:sourceVO.sourceID] topViewController];
                  // mark dragged field as checked in the table
                  [existingFieldsTable valueSelected:tempFieldVO];
@@ -464,10 +464,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
             [self initDraggedFacetWithCell:cell atPoint:origin];
             
             //Create Temp Connection
-            ConnectionVO *tempConnectionVO = [[ConnectionVO alloc] init];
+            BQBConnectionVO *tempConnectionVO = [[BQBConnectionVO alloc] init];
             tempConnectionVO.cell1 =initialDraggedCell;
             tempConnectionVO.cell2 = draggedCell;
-            tempConnectionVO.fieldVO1 = (FieldVO *) initialDraggedCell.data;
+            tempConnectionVO.fieldVO1 = (BQBFieldVO *) initialDraggedCell.data;
             tempConnectionVO.fieldVO2 = nil;
             [self addConnection:tempConnectionVO];
             cell.highlighted = NO;
@@ -500,7 +500,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 -(void) redrawCanvasView{
     NSMutableArray * lines = [[ NSMutableArray alloc] init];
-    for (ConnectionVO *objConnectionVO in self.connectionVOs) {
+    for (BQBConnectionVO *objConnectionVO in self.connectionVOs) {
         [lines addObject:[objConnectionVO getLineVOForView:self.canvasView]];
     }
     
@@ -536,9 +536,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
 }
 
--(void)addConnection:(ConnectionVO *)conn{
+-(void)addConnection:(BQBConnectionVO *)conn{
     BOOL shouldAdd = YES;
-    for (ConnectionVO *objConn in self.connectionVOs) {
+    for (BQBConnectionVO *objConn in self.connectionVOs) {
         if ([objConn isEqualToConnection:conn]) {
             shouldAdd = NO;
             break;
@@ -565,7 +565,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         [newView removeFromSuperview];
     }
     for (int i=0; i< self.connectionVOs.count; i++) {
-        ConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:i];
+        BQBConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:i];
         if([connectionVO isTemporary]){
             continue;
         }
@@ -608,11 +608,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 -(void)setSelectedConnection:(UIButton *)button{
-    for (ConnectionVO *newConnection in self.connectionVOs) {
+    for (BQBConnectionVO *newConnection in self.connectionVOs) {
         newConnection.isLineSelected = NO;
     }
    // NSLog(@"New Connection %d",button.tag);
-    ConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:button.tag];
+    BQBConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:button.tag];
     connectionVO.isLineSelected = YES;
     //connectionVO.connectionLineColor = [UIColor redColor];
     [self redrawCanvasView];
@@ -633,7 +633,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 -(void)removeTemporaryConnections{
     for (int i=0; i < self.connectionVOs.count ; i++) {
-        ConnectionVO *newConn = [self.connectionVOs objectAtIndex:i];
+        BQBConnectionVO *newConn = [self.connectionVOs objectAtIndex:i];
         if(newConn.isTemporary){
             [self.connectionVOs removeObject:newConn];
             i--;
@@ -685,9 +685,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     }
 }
 
--(void)removeAllConnectionsForSource:(SourceVO *)sourceVO{
+-(void)removeAllConnectionsForSource:(BQBSourceVO *)sourceVO{
     NSMutableArray *newConnectionVOs = [[NSMutableArray alloc] init];
-    for (ConnectionVO *connectionVO in self.connectionVOs) {
+    for (BQBConnectionVO *connectionVO in self.connectionVOs) {
         if ([connectionVO.fieldVO1.sourceVO.sourceID isEqualToString:sourceVO.sourceID]  ||  [connectionVO.fieldVO2.sourceVO.sourceID isEqualToString:sourceVO.sourceID] ) {
             continue;
         }

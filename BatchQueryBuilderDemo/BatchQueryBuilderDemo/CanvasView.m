@@ -7,7 +7,7 @@
 //
 
 #import "CanvasView.h"
-#import "LineVO.h"
+#import "BQBLineVO.h"
 
 @interface CanvasView()
 {
@@ -49,7 +49,7 @@
 -(void)setLines:(NSArray *)paramLines{
     lines  = paramLines;
     NSMutableArray *mutablePaths = [NSMutableArray array];
-    for (LineVO *line in self.lines) {
+    for (BQBLineVO *line in self.lines) {
         CGPoint start = line.startPoint;
         CGPoint end = line.endPoint;
         
@@ -87,25 +87,25 @@
     return lines;
 }
 -(NSArray *)getLines:(float)num{
-    LineVO *line1 = [[LineVO alloc]init];
+    BQBLineVO *line1 = [[BQBLineVO alloc]init];
     line1.startPoint1 = CGPointMake(20*num, 30*num);
     line1.startPoint2 = CGPointMake(20*num, 30*num);
     line1.endPoint1 = CGPointMake(420*num, 440*num);
     line1.endPoint2 = CGPointMake(420*num, 440*num);
     
-    LineVO *line2 = [[LineVO alloc]init];
+    BQBLineVO *line2 = [[BQBLineVO alloc]init];
     line2.startPoint1 = CGPointMake(100*num, 130*num);
     line2.startPoint2 = CGPointMake(130*num, 170*num);
     line2.endPoint1 = CGPointMake(140*num, 180*num);
     line2.endPoint2 = CGPointMake(150*num, 130*num);
     
-    LineVO *line3 = [[LineVO alloc]init];
+    BQBLineVO *line3 = [[BQBLineVO alloc]init];
     line3.startPoint1 = CGPointMake(120*num, 30*num);
     line3.startPoint2 = CGPointMake(120*num, 30*num);
     line3.endPoint1 = CGPointMake(120*num, 140*num);
     line3.endPoint2 = CGPointMake(120*num, 140*num);
     
-    LineVO *line4 = [[LineVO alloc]init];
+    BQBLineVO *line4 = [[BQBLineVO alloc]init];
     line4.startPoint1 = CGPointMake(320, 130);
     line4.startPoint2 = CGPointMake(320, 130);
     line4.endPoint1 = CGPointMake(220, 130);
@@ -141,7 +141,7 @@
     int counter = 0;
     for (UIBezierPath *path in pathArray) {
         
-        LineVO *lineVO = [lines objectAtIndex:counter];
+        BQBLineVO *lineVO = [lines objectAtIndex:counter];
         CGContextSetStrokeColorWithColor(context, lineVO.lineColor.CGColor);
          CGContextSetLineWidth(context, lineVO.lineWidth);
         CGContextAddPath(context, path.CGPath);

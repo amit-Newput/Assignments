@@ -23,6 +23,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 //used  in dictionary as keys to store all tables and Connections
 #define kQueryBuilderSourceTablesKey @"TABLES"
 #define kQueryBuilderSourceConnectionsKey @"CONNECTIONS"
+
+#define defaultXCoordGapBetweenTwoTables 350
+#define defaultYCoordGapBetweenTwoTables 250
+
 @interface BatchQueryController (){
     int numberOfTablesExistInCanvasView;
     int lastUsedConnectionColorIndex;
@@ -58,12 +62,13 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     for ( int i =1 ;i<=3;++i){
         NSMutableArray *fieldVOs = [[NSMutableArray alloc] init ];
         BQBSourceVO * sourceVO = [[BQBSourceVO alloc] init];
-        if(EditMode && i %2){
         sourceVO.isSelected = YES;
-        }
-        else{
-            sourceVO.isSelected = NO;
-        }
+//        if(EditMode && i %2){
+//        sourceVO.isSelected = YES;
+//        }
+//        else{
+//            sourceVO.isSelected = NO;
+//        }
         sourceVO.name =[@"table" stringByAppendingString: [NSString stringWithFormat:@"%d",i]];
         sourceVO.sourceID = sourceVO.name;
         for( int j= 1;j<=12; ++j){
@@ -100,16 +105,29 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         
         BQBSourceVO * source1 = [selectedSourceVO objectAtIndex:0];
         BQBSourceVO * source2 = [selectedSourceVO objectAtIndex:1];
-        BQBConnectionVO *connectionVO1 = [[BQBConnectionVO alloc] init];
-        //Later following two fields will be replaced by VO's
-        connectionVO1.fieldVO1 = [source1.fieldVOs objectAtIndex: 7];
-        connectionVO1.fieldVO2 = [source2.fieldVOs objectAtIndex: 8];
-        [thisDataVO.connectionVOs addObject:connectionVO1];
+        BQBSourceVO *source3 = [selectedSourceVO objectAtIndex:2];
         
-        BQBConnectionVO *connectionVO2 = [[BQBConnectionVO alloc] init];
-        connectionVO2.fieldVO1 = [source1.fieldVOs objectAtIndex: 1];
-        connectionVO2.fieldVO2 = [source2.fieldVOs objectAtIndex: 2];
-        [thisDataVO.connectionVOs addObject:connectionVO2];
+        BQBConnectionVO *connectionVO12 = [[BQBConnectionVO alloc] init];
+        connectionVO12.fieldVO1 = [source1.fieldVOs objectAtIndex: 7];
+        connectionVO12.fieldVO2 = [source2.fieldVOs objectAtIndex: 1];
+        [thisDataVO.connectionVOs addObject:connectionVO12];
+        
+        
+        BQBConnectionVO *connectionVO21 = [[BQBConnectionVO alloc] init];
+        connectionVO21.fieldVO1 = [source1.fieldVOs objectAtIndex: 2];
+        connectionVO21.fieldVO2 = [source2.fieldVOs objectAtIndex: 6];
+        [thisDataVO.connectionVOs addObject:connectionVO21];
+        
+        BQBConnectionVO *connectionVO13 = [[BQBConnectionVO alloc] init];
+        connectionVO13.fieldVO1 = [source1.fieldVOs objectAtIndex: 2];
+        connectionVO13.fieldVO2 = [source3.fieldVOs objectAtIndex: 6];
+        [thisDataVO.connectionVOs addObject:connectionVO13];
+        
+        BQBConnectionVO *connectionVO23 = [[BQBConnectionVO alloc] init];
+        connectionVO23.fieldVO1 = [source2.fieldVOs objectAtIndex: 6];
+        connectionVO23.fieldVO2 = [source3.fieldVOs objectAtIndex: 2];
+        [thisDataVO.connectionVOs addObject:connectionVO23];
+        
     }
     
     return thisDataVO;
@@ -791,17 +809,30 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     numberOfTablesExistInCanvasView =0;
     lastUsedConnectionColorIndex = 0;
     // Identify the selected tables
-    CGPoint dropAtPoint = CGPointMake(0, 0);
-    for (BQBSourceVO *objSourceVO in self.dataVO.sourceVOs) {
-        if(objSourceVO.isSelected){
-            dropAtPoint.x +=250;
-            dropAtPoint.y +=250;
-        //Add it to canvas and update the dictionary and array needed.
-            [self addTableToCanvas:objSourceVO atPoint:dropAtPoint];
+    int selectedSourceVOCount = 0;
+    CGFloat initialXCoord = 20;
+    CGFloat xCoord = initialXCoord;
+    CGFloat yCoord = 0;
+
+    for(int i=0;i<self.dataVO.sourceVOs.count;++i){
+        
+        BQBSourceVO *sourceVO =[self.dataVO.sourceVOs objectAtIndex:i];
+        if(sourceVO.isSelected){
+            selectedSourceVOCount++;
+            CGPoint dropAtPoint = CGPointMake(xCoord, yCoord);
+             [self addTableToCanvas:sourceVO atPoint:dropAtPoint];
+            xCoord += defaultXCoordGapBetweenTwoTables;
+            if(!(selectedSourceVOCount % 2)){
+                xCoord = initialXCoord;
+                yCoord += defaultYCoordGapBetweenTwoTables;
+            }
             
         }
+        
     }
-           // may be some change might require on getLiveVO method in connectionVO
+    
+     [self updateCanvasViewContentSize];
+    // may be some change might require on getLiveVO method in connectionVO
         //call redrawCanvasView and redrawConnectionslines.
     
         [self redrawCanvasView];
@@ -810,9 +841,6 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         // update the sql in sql text field.
 }
 
--(void) setCellInfoInConnection:(BQBConnectionVO *)paramConnectionVO  isFirstCell:(BOOL) paramIsFirstCell{
-    
-}
 -(void) reloadConnectionVO{
     //  For each connection in connectionVO .find index path for fieldVO1 and call the cell for row at index path. update the cell1 and cell2 in connectionVO.
     for (BQBConnectionVO *objBQBConnectionVO in self.dataVO.connectionVOs) {
@@ -830,15 +858,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
             NSIndexPath * indexPath = [NSIndexPath indexPathForRow:count inSection:0];
             [fieldsTable1.tableView reloadData];
             
+            [fieldsTable1.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
             objBQBConnectionVO.cell1 = [fieldsTable1.tableView cellForRowAtIndexPath:indexPath];
           // If cell at this indexPath is not visible then tableView returns nil cell.
             // To overcome this problem, we need to scroll upto the indexPath in our table view. So that cellview  is added to view hierarchy and we can get correct superviews for cell1.
-            if(!objBQBConnectionVO.cell1){
-                  //If cell1 is not visible then scroll upto the indexPath so that cell1 can be visible.
-                [fieldsTable1.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-                 objBQBConnectionVO.cell1 = [fieldsTable1.tableView cellForRowAtIndexPath:indexPath];
-            }
-            NSLog(@" Cell 1 : %@, %d", objBQBConnectionVO.cell1,indexPath.row);
+//            if(!objBQBConnectionVO.cell1){
+//                  //If cell1 is not visible then scroll upto the indexPath so that cell1 can be visible.
+//                [fieldsTable1.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+//                 objBQBConnectionVO.cell1 = [fieldsTable1.tableView cellForRowAtIndexPath:indexPath];
+//            }
+            
+        [fieldsTable1.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+        
             
         }
         
@@ -854,17 +885,20 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
             FieldsTable *fieldsTable2 = (FieldsTable *)[navController topViewController];
             NSIndexPath  *indexPath = [NSIndexPath indexPathForRow:count inSection:0];
            [fieldsTable2.tableView reloadData];
-           
+            // If cell at this indexPath is not visible then tableView returns nil cell.
+            // To overcome this problem, we need to scroll upto the indexPath in our table view. So that cellview  is added to view hierarchy and we can get correct superviews for cell2.
+              [fieldsTable2.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
              objBQBConnectionVO.cell2 =[fieldsTable2.tableView cellForRowAtIndexPath:indexPath];
-            if(!objBQBConnectionVO.cell2){
-                [fieldsTable2.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-                objBQBConnectionVO.cell2 = [fieldsTable2.tableView cellForRowAtIndexPath:indexPath];
-            }
-            NSLog(@" Cell 2 : %@ %d", objBQBConnectionVO.cell2,indexPath.row);
+//            if(!objBQBConnectionVO.cell2){
+//                [fieldsTable2.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+//                objBQBConnectionVO.cell2 = [fieldsTable2.tableView cellForRowAtIndexPath:indexPath];
+//            }
+            [fieldsTable2.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
             
         }
         
     }
+    
      
     [self redrawCanvasView];
    [self reloadConnectionListView];

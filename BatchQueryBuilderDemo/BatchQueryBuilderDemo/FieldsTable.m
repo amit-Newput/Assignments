@@ -92,6 +92,8 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     // Configure the cell...
+    
+    NSLog(@"Cell in CellForRowAtIndexPath %@",cell);
     return cell;
 }
 

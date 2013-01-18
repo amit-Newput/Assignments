@@ -17,26 +17,20 @@
     CGPoint pSP2;
     CGPoint pEP1;
     CGPoint pEP2;
-    CGPoint constantPoint;
    
 }
+
+// Tableviews of two fields
+@property (strong) UIView *superView1;
+@property (strong) UIView *superView2;
+// Navigation controllers having tableView
+@property (strong) UIView *superSuperView1;
+@property (strong) UIView *superSuperView2;
 
 @end
 
 @implementation BQBConnectionVO
 
-
--(id) init{
-    if(self = [super init]){
-        constantPoint = CGPointMake(-1, -1);
-        pSP1 = constantPoint;
-        pSP2 = constantPoint;
-        pEP1 = constantPoint;
-        pEP2 = constantPoint;
-        
-    }
-    return self;
-}
 -(BQBLineVO *) getLineVOForView: (UIView*)view{
     
     CGPoint startPoint1 = CGPointMake(self.cell1.frame.origin.x  ,self.cell1.frame.origin.y + (self.cell1.frame.size.height /2) );
@@ -44,13 +38,6 @@
     
     CGPoint endPoint1 = CGPointMake(self.cell2.frame.origin.x  ,(self.cell2.frame.origin.y + (self.cell2.frame.size.height) /2) );
     CGPoint endPoint2 = CGPointMake((self.cell2.frame.origin.x-1 + self.cell2.frame.size.width) ,(self.cell2.frame.origin.y + (self.cell2.frame.size.height) /2) );
-    
-    
-    NSLog(@" StartPoint1 x=%f y=%f",startPoint1.x,startPoint1.y);
-      NSLog(@" StartPoint2 x=%f y=%f",startPoint2.x,startPoint2.y);
-      NSLog(@" EndPoint1 x=%f y=%f",endPoint1.x,endPoint1.y);
-        NSLog(@" EndPoint2 x=%f y=%f",endPoint2.x,endPoint2.y);
-
       
     if (self.cell1.superview) {
         self.superView1 = self.cell1.superview;
@@ -69,13 +56,6 @@
         pEP1 = endPoint1;
         pEP2 = endPoint2;
         
-    }
-    
-    if(CGPointEqualToPoint(pSP1, constantPoint)){
-        pSP1 = startPoint1;
-        pSP2 = startPoint2;
-        pEP1 = endPoint1;
-        pEP2 = endPoint2;
     }
     
     // Super view frame in coordinate system of given view

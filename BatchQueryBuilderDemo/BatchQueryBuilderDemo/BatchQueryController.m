@@ -102,10 +102,14 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         BQBSourceVO * source2 = [selectedSourceVO objectAtIndex:1];
         BQBConnectionVO *connectionVO1 = [[BQBConnectionVO alloc] init];
         //Later following two fields will be replaced by VO's
-        connectionVO1.fieldVO1 = [source1.fieldVOs objectAtIndex: 1];
-        connectionVO1.fieldVO2 = [source2.fieldVOs objectAtIndex: 2];
-        
+        connectionVO1.fieldVO1 = [source1.fieldVOs objectAtIndex: 7];
+        connectionVO1.fieldVO2 = [source2.fieldVOs objectAtIndex: 8];
         [thisDataVO.connectionVOs addObject:connectionVO1];
+        
+        BQBConnectionVO *connectionVO2 = [[BQBConnectionVO alloc] init];
+        connectionVO2.fieldVO1 = [source1.fieldVOs objectAtIndex: 1];
+        connectionVO2.fieldVO2 = [source2.fieldVOs objectAtIndex: 2];
+        [thisDataVO.connectionVOs addObject:connectionVO2];
     }
     
     return thisDataVO;
@@ -163,7 +167,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
     [super viewDidAppear:animated];
     
-    [self reloadConnectionVO];
+    [self performSelector:@selector(reloadConnectionVO) withObject:nil afterDelay:.00];
+    //[self reloadConnectionVO];
+   
     
     
 }
@@ -346,6 +352,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     //return;
     UINavigationController *tableNav = [canvasViewTablesDic objectForKey:[tagByTableNameMapping objectForKey:[NSString stringWithFormat:@"%d",gesture.view.tag]]];
     [tableNav.view.superview bringSubviewToFront:tableNav.view];
+    
 }
 
 -(void) handlePanningCanvasTable:(UIPanGestureRecognizer *) gesture{
@@ -787,20 +794,25 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     CGPoint dropAtPoint = CGPointMake(0, 0);
     for (BQBSourceVO *objSourceVO in self.dataVO.sourceVOs) {
         if(objSourceVO.isSelected){
-            dropAtPoint.x +=20;
-            dropAtPoint.y +=20;
+            dropAtPoint.x +=250;
+            dropAtPoint.y +=250;
         //Add it to canvas and update the dictionary and array needed.
             [self addTableToCanvas:objSourceVO atPoint:dropAtPoint];
+            
         }
     }
            // may be some change might require on getLiveVO method in connectionVO
         //call redrawCanvasView and redrawConnectionslines.
+    
         [self redrawCanvasView];
         
         //reload grid with new data.
         // update the sql in sql text field.
 }
 
+-(void) setCellInfoInConnection:(BQBConnectionVO *)paramConnectionVO  isFirstCell:(BOOL) paramIsFirstCell{
+    
+}
 -(void) reloadConnectionVO{
     //  For each connection in connectionVO .find index path for fieldVO1 and call the cell for row at index path. update the cell1 and cell2 in connectionVO.
     for (BQBConnectionVO *objBQBConnectionVO in self.dataVO.connectionVOs) {
@@ -812,15 +824,20 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                 break;
         }
         if(count!=-1){
+            
             UINavigationController *navController = [canvasViewTablesDic objectForKey:objBQBConnectionVO.fieldVO1.sourceVO.sourceID];
             FieldsTable *fieldsTable1 = (FieldsTable *)[navController topViewController];
             NSIndexPath * indexPath = [NSIndexPath indexPathForRow:count inSection:0];
+            [fieldsTable1.tableView reloadData];
             
-            //(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-            objBQBConnectionVO.cell1 = [fieldsTable1 tableView:fieldsTable1.tableView cellForRowAtIndexPath:indexPath];
-            objBQBConnectionVO.cell1.frame = CGRectMake(0, indexPath.row*44,objBQBConnectionVO.cell1.frame.size.width,objBQBConnectionVO.cell1.frame.size.height);
-            //objBQBConnectionVO.superView1 = fieldsTable1.tableView;
-           // objBQBConnectionVO.superSuperView1 = navController .view;
+            objBQBConnectionVO.cell1 = [fieldsTable1.tableView cellForRowAtIndexPath:indexPath];
+          // If cell at this indexPath is not visible then tableView returns nil cell.
+            // To overcome this problem, we need to scroll upto the indexPath in our table view. So that cellview  is added to view hierarchy and we can get correct superviews for cell1.
+            if(!objBQBConnectionVO.cell1){
+                  //If cell1 is not visible then scroll upto the indexPath so that cell1 can be visible.
+                [fieldsTable1.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+                 objBQBConnectionVO.cell1 = [fieldsTable1.tableView cellForRowAtIndexPath:indexPath];
+            }
             NSLog(@" Cell 1 : %@, %d", objBQBConnectionVO.cell1,indexPath.row);
             
         }
@@ -836,17 +853,21 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
             UINavigationController  *navController = [canvasViewTablesDic objectForKey:objBQBConnectionVO.fieldVO2.sourceVO.sourceID];
             FieldsTable *fieldsTable2 = (FieldsTable *)[navController topViewController];
             NSIndexPath  *indexPath = [NSIndexPath indexPathForRow:count inSection:0];
-            objBQBConnectionVO.cell2 =[fieldsTable2 tableView:fieldsTable2.tableView cellForRowAtIndexPath:indexPath];
-            objBQBConnectionVO.cell2.frame = CGRectMake(0, indexPath.row*44,objBQBConnectionVO.cell2.frame.size.width,objBQBConnectionVO.cell2.frame.size.height);
-            
-            //objBQBConnectionVO.superView2 = fieldsTable2.tableView;
-            //objBQBConnectionVO.superSuperView2 = navController.view;
+           [fieldsTable2.tableView reloadData];
+           
+             objBQBConnectionVO.cell2 =[fieldsTable2.tableView cellForRowAtIndexPath:indexPath];
+            if(!objBQBConnectionVO.cell2){
+                [fieldsTable2.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+                objBQBConnectionVO.cell2 = [fieldsTable2.tableView cellForRowAtIndexPath:indexPath];
+            }
             NSLog(@" Cell 2 : %@ %d", objBQBConnectionVO.cell2,indexPath.row);
             
         }
         
     }
-    [self reloadConnectionListView];
+     
+    [self redrawCanvasView];
+   [self reloadConnectionListView];
 
 }
 

@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Prateek Pradhan. All rights reserved.
 //
 
-#import "DemoAppViewController.h"
+#import "BatchQueryController.h"
 #import "canvasView.h"
 #import "BQBConnectionVO.h"
 #import "BQBFieldVO.h"
@@ -23,7 +23,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 //used  in dictionary as keys to store all tables and Connections
 #define kQueryBuilderSourceTablesKey @"TABLES"
 #define kQueryBuilderSourceConnectionsKey @"CONNECTIONS"
-@interface DemoAppViewController (){
+@interface BatchQueryController (){
     int numberOfTablesExistInCanvasView;
     int lastUsedConnectionColorIndex;
 }
@@ -34,10 +34,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 -(void) handlePanningCanvasTable:(UIPanGestureRecognizer *) gesture;
 -(void) clearDraggingObjects;
 @property (strong) NSMutableDictionary *tagByTableNameMapping;
-@property (strong, nonatomic) NSMutableArray *connectionVOs;
+//@property (strong, nonatomic) NSMutableArray *connectionVOs;
 @end
 
-@implementation DemoAppViewController
+@implementation BatchQueryController
 
 @synthesize canvasBackView;
 @synthesize sourcesTableBackView;
@@ -46,40 +46,75 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @synthesize canvasViewTablesDic;
 @synthesize tagByTableNameMapping;
 @synthesize connectionListView;
+@synthesize dataVO;
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+
+// set Mode NO to load Data to mimic the adding functionality of Batch Query
+// else  YES to mimic the editing functionality
+-(BQBDataVO *) getNewBQBDataVOWithEditMode: (BOOL) EditMode{
     
-    //array for saving the tables.
-   self.sourceVOs = [[NSMutableArray alloc] init];
+    BQBDataVO * thisDataVO = [[BQBDataVO alloc] init];
     
     for ( int i =1 ;i<=3;++i){
-         NSMutableArray *fieldVOs = [[NSMutableArray alloc] init ];
+        NSMutableArray *fieldVOs = [[NSMutableArray alloc] init ];
         BQBSourceVO * sourceVO = [[BQBSourceVO alloc] init];
+        if(EditMode && i %2){
+        sourceVO.isSelected = YES;
+        }
+        else{
+            sourceVO.isSelected = NO;
+        }
         sourceVO.name =[@"table" stringByAppendingString: [NSString stringWithFormat:@"%d",i]];
         sourceVO.sourceID = sourceVO.name;
         for( int j= 1;j<=12; ++j){
             BQBFieldVO * fieldVO = [[BQBFieldVO alloc] init];
             fieldVO.sourceVO = sourceVO ;
             fieldVO.type = FieldTypeString;
-            fieldVO.isSelected = false;
+            if(EditMode && j %2){
+                fieldVO.isSelected = YES;
+            }
+            else{
+                fieldVO.isSelected = NO;
+            }
+            
             fieldVO.name =  [@"Field" stringByAppendingString: [NSString stringWithFormat:@"%d",j]];
             fieldVO.fieldID = fieldVO.name;
             [fieldVOs addObject:fieldVO];
         }
         sourceVO.fieldVOs = fieldVOs;
-        [self.sourceVOs addObject:sourceVO];
-    
+        //[self.sourceVOs addObject:sourceVO];
+        [thisDataVO.sourceVOs addObject:sourceVO];
+        
     }
     
-    //[sourcesDic setObject:tables forKey:kQueryBuilderSourceTablesKey];
+    //Fill connection VO if needed here
+    NSMutableArray * selectedSourceVO = [[NSMutableArray alloc] init];
+    for(BQBSourceVO *objSOurceVO in thisDataVO.sourceVOs){
+        
+        if(objSOurceVO.isSelected){
+            [selectedSourceVO addObject:objSOurceVO];
+        }   
+    }
     
-    self.sourcesTable = [[SourcesTable alloc] initWithSources:self.sourceVOs];
-    sourcesTableNav = [[UINavigationController alloc] initWithRootViewController:sourcesTable];
-    sourcesTableNav.view.frame = CGRectMake(0, 0, sourcesTableBackView.frame.size.width, sourcesTableBackView.frame.size.height);
-    [self.sourcesTableBackView addSubview:sourcesTableNav.view];
+    if(selectedSourceVO.count >1){
+        
+        BQBSourceVO * source1 = [selectedSourceVO objectAtIndex:0];
+        BQBSourceVO * source2 = [selectedSourceVO objectAtIndex:1];
+        BQBConnectionVO *connectionVO1 = [[BQBConnectionVO alloc] init];
+        //Later following two fields will be replaced by VO's
+        connectionVO1.fieldVO1 = [source1.fieldVOs objectAtIndex: 1];
+        connectionVO1.fieldVO2 = [source2.fieldVOs objectAtIndex: 2];
+        
+        [thisDataVO.connectionVOs addObject:connectionVO1];
+    }
+    
+    return thisDataVO;
+    
+}
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
     
     canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(0, 0, self.canvasBackView.frame.size.width -60, self.canvasBackView.frame.size.height)];
     canvasView.backgroundColor = [UIColor colorWithWhite:.95 alpha:1.0];
@@ -106,14 +141,74 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     canvasViewTablesDic = [[NSMutableDictionary alloc] init];
     tagByTableNameMapping = [[NSMutableDictionary alloc] init];
     numberOfTablesExistInCanvasView = 0;
-    if (!self.connectionVOs) {
-        self.connectionVOs = [NSMutableArray array];
-    }
     
     //[sourcesDic setObject:self.connectionVOs forKey:kQueryBuilderSourceConnectionsKey];
     
     lastUsedConnectionColorIndex = 0;
     
+    //array for saving the tables.
+    self.dataVO = nil;
+    
+    //[sourcesDic setObject:tables forKey:kQueryBuilderSourceTablesKey];
+    
+    self.sourcesTable = [[SourcesTable alloc] initWithSources:self.dataVO.sourceVOs];
+    sourcesTableNav = [[UINavigationController alloc] initWithRootViewController:sourcesTable];
+    sourcesTableNav.view.frame = CGRectMake(0, 0, sourcesTableBackView.frame.size.width, sourcesTableBackView.frame.size.height);
+    [self.sourcesTableBackView addSubview:sourcesTableNav.view];
+    
+    self.dataVO =[self getNewBQBDataVOWithEditMode:YES];
+}
+
+-(void) viewDidAppear:(BOOL)animated{
+    
+    [super viewDidAppear:animated];
+    
+    [self reloadConnectionVO];
+    
+    
+}
+-(void) addTableToCanvas:(BQBSourceVO*) paramSourceVO atPoint:(CGPoint) dropAtPoint{
+    //Determine whether to create a new table on canvas or not.
+    if( ![canvasViewTablesDic objectForKey:paramSourceVO.sourceID]){
+        paramSourceVO.isSelected = YES;
+        FieldsTable *fieldTable = [[FieldsTable alloc] initWithSourceVO:paramSourceVO];
+        fieldTable.delegate = self;
+        fieldTable.view.frame = CGRectMake(0, 44,200, 200);
+        
+        
+        UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:fieldTable];
+        // Create Delete Button for Field Table
+        //                 UIButton *button = [UIButton  buttonWithType:UIButtonTypeCustom];
+        //                 [button setTitle:@"X" forState:UIControlStateNormal];
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        [button setImage:[UIImage imageNamed:@"round_delete"] forState:UIControlStateNormal];
+        //button.titleLabel.textColor = [UIColor blackColor];
+        [button setFrame:CGRectMake(0, 0, 20, 20)];
+        
+        UIBarButtonItem *deleteTableButton = [[UIBarButtonItem  alloc] initWithCustomView:button];
+        
+        fieldTable.navigationItem.leftBarButtonItem = deleteTableButton;
+        
+        sourceValueTableNav.view.frame =CGRectMake(dropAtPoint.x, dropAtPoint.y,200, 200);
+        
+        //Apply Gestures
+        UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanningCanvasTable:)];
+        //UITapGestureRecognizer *tapGesture =[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTappingCanvasTable:)];
+        int tag = BaseTagForCanvasTable + numberOfTablesExistInCanvasView ;
+        sourceValueTableNav.view.tag = tag;
+        [sourceValueTableNav.view addGestureRecognizer:panGesture];
+        sourceValueTableNav.navigationBar.tag =tag;
+        sourceValueTableNav.view.layer.shadowColor = [UIColor grayColor].CGColor;
+        sourceValueTableNav.view.layer.shadowOpacity = .5;
+        sourceValueTableNav.view.layer.shadowOffset = CGSizeMake(5, 5);
+        // [sourceValueTableNav.navigationBar addGestureRecognizer:tapGesture];
+        [self.canvasView addSubview:sourceValueTableNav.view];
+        
+        [canvasViewTablesDic setObject:sourceValueTableNav forKey:paramSourceVO.sourceID];
+        [tagByTableNameMapping setObject:paramSourceVO.sourceID forKey:[NSString stringWithFormat:@"%d",tag]];
+        numberOfTablesExistInCanvasView++;
+    }
 }
 //code related to dragging Facets
 //called when pan gesture starts
@@ -224,47 +319,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                  BQBFieldVO *tempFieldVO = (BQBFieldVO *)draggedCell.data;
                  sourceVO = tempFieldVO.sourceVO;
              }
-             //Determine whether to create a new table on canvas or not.
              
-             if( ![canvasViewTablesDic objectForKey:sourceVO.sourceID]){
-                 FieldsTable *fieldTable = [[FieldsTable alloc] initWithSourceVO:sourceVO];
-                 fieldTable.delegate = self;
-                 fieldTable.view.frame = CGRectMake(0, 44,200, 200);
-                 
-                 
-                 UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:fieldTable];
-                 // Create Delete Button for Field Table
-//                 UIButton *button = [UIButton  buttonWithType:UIButtonTypeCustom];
-//                 [button setTitle:@"X" forState:UIControlStateNormal];
-                 
-                 UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-                 [button setImage:[UIImage imageNamed:@"round_delete"] forState:UIControlStateNormal];
-                 //button.titleLabel.textColor = [UIColor blackColor];
-                 [button setFrame:CGRectMake(0, 0, 20, 20)];
-                 
-                 UIBarButtonItem *deleteTableButton = [[UIBarButtonItem  alloc] initWithCustomView:button];
-                 
-                 fieldTable.navigationItem.leftBarButtonItem = deleteTableButton;
-                 
-                 sourceValueTableNav.view.frame =CGRectMake(droppedAtPoint.x, droppedAtPoint.y,200, 200);
-                 
-                 //Apply Gestures
-                 UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanningCanvasTable:)];
-                 //UITapGestureRecognizer *tapGesture =[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTappingCanvasTable:)];
-                 int tag = BaseTagForCanvasTable + numberOfTablesExistInCanvasView ;
-                 sourceValueTableNav.view.tag = tag;
-                 [sourceValueTableNav.view addGestureRecognizer:panGesture];
-                 sourceValueTableNav.navigationBar.tag =tag;
-                 sourceValueTableNav.view.layer.shadowColor = [UIColor grayColor].CGColor;
-                 sourceValueTableNav.view.layer.shadowOpacity = .5;
-                 sourceValueTableNav.view.layer.shadowOffset = CGSizeMake(5, 5);
-                // [sourceValueTableNav.navigationBar addGestureRecognizer:tapGesture];
-                 [self.canvasView addSubview:sourceValueTableNav.view];
-                 
-                 [canvasViewTablesDic setObject:sourceValueTableNav forKey:sourceVO.sourceID];
-                 [tagByTableNameMapping setObject:sourceVO.sourceID forKey:[NSString stringWithFormat:@"%d",tag]];
-                 numberOfTablesExistInCanvasView++;
-             }
+             
+             [self addTableToCanvas:sourceVO atPoint:droppedAtPoint];
+             
              if([draggedCell.data isKindOfClass:[BQBFieldVO class]]){
               //Get the value table to be updated
                  
@@ -500,7 +558,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 -(void) redrawCanvasView{
     NSMutableArray * lines = [[ NSMutableArray alloc] init];
-    for (BQBConnectionVO *objConnectionVO in self.connectionVOs) {
+    for (BQBConnectionVO *objConnectionVO in self.dataVO.connectionVOs) {
         [lines addObject:[objConnectionVO getLineVOForView:self.canvasView]];
     }
     
@@ -538,7 +596,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 -(void)addConnection:(BQBConnectionVO *)conn{
     BOOL shouldAdd = YES;
-    for (BQBConnectionVO *objConn in self.connectionVOs) {
+    for (BQBConnectionVO *objConn in self.dataVO.connectionVOs) {
         if ([objConn isEqualToConnection:conn]) {
             shouldAdd = NO;
             break;
@@ -546,7 +604,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     }
     if (shouldAdd) {
         conn.connectionLineColor = [self getConnectionColor];
-        [self.connectionVOs addObject:conn];
+        [self.dataVO.connectionVOs addObject:conn];
         [self reloadConnectionListView];
     }
     
@@ -564,8 +622,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     for (UIView *newView in self.connectionListView.subviews) {
         [newView removeFromSuperview];
     }
-    for (int i=0; i< self.connectionVOs.count; i++) {
-        BQBConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:i];
+    for (int i=0; i< self.dataVO.connectionVOs.count; i++) {
+        BQBConnectionVO *connectionVO = [self.dataVO.connectionVOs objectAtIndex:i];
         if([connectionVO isTemporary]){
             continue;
         }
@@ -608,11 +666,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 -(void)setSelectedConnection:(UIButton *)button{
-    for (BQBConnectionVO *newConnection in self.connectionVOs) {
+    for (BQBConnectionVO *newConnection in self.dataVO.connectionVOs) {
         newConnection.isLineSelected = NO;
     }
    // NSLog(@"New Connection %d",button.tag);
-    BQBConnectionVO *connectionVO = [self.connectionVOs objectAtIndex:button.tag];
+    BQBConnectionVO *connectionVO = [self.dataVO.connectionVOs objectAtIndex:button.tag];
     connectionVO.isLineSelected = YES;
     //connectionVO.connectionLineColor = [UIColor redColor];
     [self redrawCanvasView];
@@ -624,18 +682,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 // Index of line array in Canvas View and index of corrosponding connection VOs should be same
 -(void)removeConnectionAtIndex:(int)index{
-    if (self.connectionVOs.count > index) {
-        [self.connectionVOs removeObjectAtIndex:index];
+    if (self.dataVO.connectionVOs.count > index) {
+        [self.dataVO.connectionVOs removeObjectAtIndex:index];
     }
     [self redrawCanvasView];
     [self reloadConnectionListView];
 }
 
 -(void)removeTemporaryConnections{
-    for (int i=0; i < self.connectionVOs.count ; i++) {
-        BQBConnectionVO *newConn = [self.connectionVOs objectAtIndex:i];
+    for (int i=0; i < self.dataVO.connectionVOs.count ; i++) {
+        BQBConnectionVO *newConn = [self.dataVO.connectionVOs objectAtIndex:i];
         if(newConn.isTemporary){
-            [self.connectionVOs removeObject:newConn];
+            [self.dataVO.connectionVOs removeObject:newConn];
             i--;
         }
     }
@@ -660,10 +718,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
             if([fieldsTable.navigationItem.leftBarButtonItem.customView  pointInside:startingPointInTableNav withEvent:nil]){
                 
                 //Handle Deletion of table here
-                
+                fieldsTable.sourceVO.isSelected = NO;
                 //Idetify all Connections of table and delete them
                 [self removeAllConnectionsForSource:fieldsTable.sourceVO];
-                
+            
                 //remove table from view and dictionary.x
                 [self.canvasViewTablesDic removeObjectForKey:fieldsTable.sourceVO.sourceID];
                 [self.tagByTableNameMapping removeObjectForKey:[NSString stringWithFormat:@"%d",tableNav.view.tag]];
@@ -687,13 +745,13 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 -(void)removeAllConnectionsForSource:(BQBSourceVO *)sourceVO{
     NSMutableArray *newConnectionVOs = [[NSMutableArray alloc] init];
-    for (BQBConnectionVO *connectionVO in self.connectionVOs) {
+    for (BQBConnectionVO *connectionVO in self.dataVO.connectionVOs) {
         if ([connectionVO.fieldVO1.sourceVO.sourceID isEqualToString:sourceVO.sourceID]  ||  [connectionVO.fieldVO2.sourceVO.sourceID isEqualToString:sourceVO.sourceID] ) {
             continue;
         }
         [newConnectionVOs addObject:connectionVO];
     }
-    self.connectionVOs = newConnectionVOs;
+    self.dataVO.connectionVOs = newConnectionVOs;
     [self reloadConnectionListView];
 }
 
@@ -711,9 +769,96 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         if (exY > size.height) {
             size.height = exY;
         }
-        
-        
     }
     self.canvasView.contentSize = size;
 }
+
+
+-(void) reloadUI{
+    // Load left side tables from sourceVOs.
+    self.sourcesTable.sourceVOs = self.dataVO.sourceVOs;
+    //clear all existing views from Canvas View
+    [[self.canvasView subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    [canvasViewTablesDic removeAllObjects] ;
+    [tagByTableNameMapping removeAllObjects];
+    numberOfTablesExistInCanvasView =0;
+    lastUsedConnectionColorIndex = 0;
+    // Identify the selected tables
+    CGPoint dropAtPoint = CGPointMake(0, 0);
+    for (BQBSourceVO *objSourceVO in self.dataVO.sourceVOs) {
+        if(objSourceVO.isSelected){
+            dropAtPoint.x +=20;
+            dropAtPoint.y +=20;
+        //Add it to canvas and update the dictionary and array needed.
+            [self addTableToCanvas:objSourceVO atPoint:dropAtPoint];
+        }
+    }
+           // may be some change might require on getLiveVO method in connectionVO
+        //call redrawCanvasView and redrawConnectionslines.
+        [self redrawCanvasView];
+        
+        //reload grid with new data.
+        // update the sql in sql text field.
+}
+
+-(void) reloadConnectionVO{
+    //  For each connection in connectionVO .find index path for fieldVO1 and call the cell for row at index path. update the cell1 and cell2 in connectionVO.
+    for (BQBConnectionVO *objBQBConnectionVO in self.dataVO.connectionVOs) {
+        //FOR CELL1
+        int count = -1;
+        for (BQBFieldVO * objFieldVO in objBQBConnectionVO.fieldVO1.sourceVO.fieldVOs) {
+            count++;
+            if([objFieldVO.fieldID isEqualToString:objBQBConnectionVO.fieldVO1.fieldID])
+                break;
+        }
+        if(count!=-1){
+            UINavigationController *navController = [canvasViewTablesDic objectForKey:objBQBConnectionVO.fieldVO1.sourceVO.sourceID];
+            FieldsTable *fieldsTable1 = (FieldsTable *)[navController topViewController];
+            NSIndexPath * indexPath = [NSIndexPath indexPathForRow:count inSection:0];
+            
+            //(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+            objBQBConnectionVO.cell1 = [fieldsTable1 tableView:fieldsTable1.tableView cellForRowAtIndexPath:indexPath];
+            objBQBConnectionVO.cell1.frame = CGRectMake(0, indexPath.row*44,objBQBConnectionVO.cell1.frame.size.width,objBQBConnectionVO.cell1.frame.size.height);
+            //objBQBConnectionVO.superView1 = fieldsTable1.tableView;
+           // objBQBConnectionVO.superSuperView1 = navController .view;
+            NSLog(@" Cell 1 : %@, %d", objBQBConnectionVO.cell1,indexPath.row);
+            
+        }
+        
+        // FOR CELL2
+        count = -1;
+        for (BQBFieldVO * objFieldVO in objBQBConnectionVO.fieldVO2.sourceVO.fieldVOs) {
+            count++;
+            if([objFieldVO.fieldID isEqualToString:objBQBConnectionVO.fieldVO2.fieldID])
+                break;
+        }
+        if(count!=-1){
+            UINavigationController  *navController = [canvasViewTablesDic objectForKey:objBQBConnectionVO.fieldVO2.sourceVO.sourceID];
+            FieldsTable *fieldsTable2 = (FieldsTable *)[navController topViewController];
+            NSIndexPath  *indexPath = [NSIndexPath indexPathForRow:count inSection:0];
+            objBQBConnectionVO.cell2 =[fieldsTable2 tableView:fieldsTable2.tableView cellForRowAtIndexPath:indexPath];
+            objBQBConnectionVO.cell2.frame = CGRectMake(0, indexPath.row*44,objBQBConnectionVO.cell2.frame.size.width,objBQBConnectionVO.cell2.frame.size.height);
+            
+            //objBQBConnectionVO.superView2 = fieldsTable2.tableView;
+            //objBQBConnectionVO.superSuperView2 = navController.view;
+            NSLog(@" Cell 2 : %@ %d", objBQBConnectionVO.cell2,indexPath.row);
+            
+        }
+        
+    }
+    [self reloadConnectionListView];
+
+}
+
+-(void)setDataVO:(BQBDataVO *)paramDataVO{
+    if(paramDataVO){
+        dataVO = paramDataVO;
+        [self reloadUI];
+    }
+}
+
+-(BQBDataVO *) dataVO{
+    return dataVO;
+}
+
 @end

@@ -10,4 +10,11 @@
 
 @implementation BQBSourceVO
 
+-(id)init {
+    if (self = [super init])  {
+        self.isSelected = NO;
+    }
+    return self;
+}
+
 @end

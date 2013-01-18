@@ -8,6 +8,7 @@
 
 #import "BQBConnectionVO.h"
 
+
 @interface BQBConnectionVO()
 
 {
@@ -16,12 +17,8 @@
     CGPoint pSP2;
     CGPoint pEP1;
     CGPoint pEP2;
-    // Tableviews of two fields
-    UIView *superView1;
-    UIView *superView2;
-    // Navigation controllers having tableView
-    UIView *superSuperView1;
-    UIView *superSuperView2;
+    CGPoint constantPoint;
+   
 }
 
 @end
@@ -29,6 +26,17 @@
 @implementation BQBConnectionVO
 
 
+-(id) init{
+    if(self = [super init]){
+        constantPoint = CGPointMake(-1, -1);
+        pSP1 = constantPoint;
+        pSP2 = constantPoint;
+        pEP1 = constantPoint;
+        pEP2 = constantPoint;
+        
+    }
+    return self;
+}
 -(BQBLineVO *) getLineVOForView: (UIView*)view{
     
     CGPoint startPoint1 = CGPointMake(self.cell1.frame.origin.x  ,self.cell1.frame.origin.y + (self.cell1.frame.size.height /2) );
@@ -37,29 +45,43 @@
     CGPoint endPoint1 = CGPointMake(self.cell2.frame.origin.x  ,(self.cell2.frame.origin.y + (self.cell2.frame.size.height) /2) );
     CGPoint endPoint2 = CGPointMake((self.cell2.frame.origin.x-1 + self.cell2.frame.size.width) ,(self.cell2.frame.origin.y + (self.cell2.frame.size.height) /2) );
     
+    
+    NSLog(@" StartPoint1 x=%f y=%f",startPoint1.x,startPoint1.y);
+      NSLog(@" StartPoint2 x=%f y=%f",startPoint2.x,startPoint2.y);
+      NSLog(@" EndPoint1 x=%f y=%f",endPoint1.x,endPoint1.y);
+        NSLog(@" EndPoint2 x=%f y=%f",endPoint2.x,endPoint2.y);
+
+      
     if (self.cell1.superview) {
-        superView1 = self.cell1.superview;
-        if (superView1) {
-            superSuperView1 = superView1.superview;
+        self.superView1 = self.cell1.superview;
+        if (self.superView1) {
+            self.superSuperView1 = self.superView1.superview;
         }
         pSP1 = startPoint1;
         pSP2 = startPoint2;
     }
     
     if (self.cell2.superview) {
-        superView2 = self.cell2.superview;
-        if (superView2) {
-            superSuperView2 = superView2.superview;
+        self.superView2 = self.cell2.superview;
+        if (self.superView2) {
+            self.superSuperView2 = self.superView2.superview;
         }
         pEP1 = endPoint1;
         pEP2 = endPoint2;
         
     }
     
+    if(CGPointEqualToPoint(pSP1, constantPoint)){
+        pSP1 = startPoint1;
+        pSP2 = startPoint2;
+        pEP1 = endPoint1;
+        pEP2 = endPoint2;
+    }
+    
     // Super view frame in coordinate system of given view
-    CGRect fromView1TranslatedRect = [view convertRect:superView1.frame fromView:superSuperView1];
-    startPoint1 = [view convertPoint:pSP1 fromView:superView1];
-    startPoint2 = [view convertPoint:pSP2 fromView:superView1];
+    CGRect fromView1TranslatedRect = [view convertRect:self.superView1.frame fromView:self.superSuperView1];
+    startPoint1 = [view convertPoint:pSP1 fromView:self.superView1];
+    startPoint2 = [view convertPoint:pSP2 fromView:self.superView1];
     if(startPoint1.y  <= fromView1TranslatedRect.origin.y ){
         
         startPoint1.y = fromView1TranslatedRect.origin.y-(self.cell1.frame.size.height/2);
@@ -71,9 +93,9 @@
     }
     
     
-    CGRect fromView2TranslatedRect = [view convertRect:superView2.frame fromView:superSuperView2];
-    endPoint1 = [view convertPoint:pEP1 fromView:superView2];
-    endPoint2 = [view convertPoint:pEP2 fromView:superView2];
+    CGRect fromView2TranslatedRect = [view convertRect:self.superView2.frame fromView:self.superSuperView2];
+    endPoint1 = [view convertPoint:pEP1 fromView:self.superView2];
+    endPoint2 = [view convertPoint:pEP2 fromView:self.superView2];
     // We are decreasing the endPoint y coordinate by 1 because y coordinate of startPoint and endPoint will be same and
     // will create closed path
     if(endPoint1.y  <= fromView2TranslatedRect.origin.y ){

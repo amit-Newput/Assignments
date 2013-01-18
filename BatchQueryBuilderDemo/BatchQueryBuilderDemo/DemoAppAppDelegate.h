@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class DemoAppViewController;
+@class BatchQueryController;
 
 @interface DemoAppAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (strong, nonatomic) DemoAppViewController *viewController;
+@property (strong, nonatomic) BatchQueryController *viewController;
 
 @end

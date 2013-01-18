@@ -20,6 +20,14 @@
 @property BOOL isLineSelected;
 
 
+// Tableviews of two fields
+@property (strong) UIView *superView1;
+@property (strong) UIView *superView2;
+// Navigation controllers having tableView
+@property (strong) UIView *superSuperView1;
+@property (strong) UIView *superSuperView2;
+
+
 -(BQBLineVO *) getLineVOForView:(UIView *)view;
 -(BOOL)isEqualToConnection:(BQBConnectionVO *)connection;
 -(BOOL)isTemporary;

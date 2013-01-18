@@ -8,7 +8,7 @@
 
 #import "DemoAppAppDelegate.h"
 
-#import "DemoAppViewController.h"
+#import "BatchQueryController.h"
 
 @implementation DemoAppAppDelegate
 
@@ -16,7 +16,7 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
-    self.viewController = [[DemoAppViewController alloc] initWithNibName:@"DemoAppViewController" bundle:nil];
+    self.viewController = [[BatchQueryController alloc] initWithNibName:@"DemoAppViewController" bundle:nil];
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
     return YES;

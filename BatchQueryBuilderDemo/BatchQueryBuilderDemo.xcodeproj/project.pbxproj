@@ -21,8 +21,8 @@
 		FB9ABA46169C247200CE14F4 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA45169C247200CE14F4 /* Default.png */; };
 		FB9ABA48169C247200CE14F4 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA47169C247200CE14F4 /* Default@2x.png */; };
 		FB9ABA4A169C247200CE14F4 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA49169C247200CE14F4 /* Default-568h@2x.png */; };
-		FB9ABA4D169C247200CE14F4 /* DemoAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA4C169C247200CE14F4 /* DemoAppViewController.m */; };
-		FB9ABA50169C247200CE14F4 /* DemoAppViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA4E169C247200CE14F4 /* DemoAppViewController.xib */; };
+		FB9ABA4D169C247200CE14F4 /* BatchQueryController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA4C169C247200CE14F4 /* BatchQueryController.m */; };
+		FB9ABA50169C247200CE14F4 /* BatchQueryController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA4E169C247200CE14F4 /* BatchQueryController.xib */; };
 		FB9ABA58169C32C000CE14F4 /* CanvasView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA57169C32C000CE14F4 /* CanvasView.m */; };
 		FB9ABA5C169C35F600CE14F4 /* SourcesTable.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9ABA5A169C35F600CE14F4 /* SourcesTable.m */; };
 		FB9ABA5D169C35F600CE14F4 /* SourcesTable.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB9ABA5B169C35F600CE14F4 /* SourcesTable.xib */; };
@@ -57,9 +57,9 @@
 		FB9ABA45169C247200CE14F4 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		FB9ABA47169C247200CE14F4 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		FB9ABA49169C247200CE14F4 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		FB9ABA4B169C247200CE14F4 /* DemoAppViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DemoAppViewController.h; sourceTree = "<group>"; };
-		FB9ABA4C169C247200CE14F4 /* DemoAppViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemoAppViewController.m; sourceTree = "<group>"; };
-		FB9ABA4F169C247200CE14F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DemoAppViewController.xib; sourceTree = "<group>"; };
+		FB9ABA4B169C247200CE14F4 /* BatchQueryController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BatchQueryController.h; sourceTree = "<group>"; };
+		FB9ABA4C169C247200CE14F4 /* BatchQueryController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BatchQueryController.m; sourceTree = "<group>"; };
+		FB9ABA4F169C247200CE14F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BatchQueryController.xib; sourceTree = "<group>"; };
 		FB9ABA56169C32C000CE14F4 /* CanvasView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CanvasView.h; sourceTree = "<group>"; };
 		FB9ABA57169C32C000CE14F4 /* CanvasView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CanvasView.m; sourceTree = "<group>"; };
 		FB9ABA59169C35F600CE14F4 /* SourcesTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourcesTable.h; sourceTree = "<group>"; };
@@ -132,9 +132,9 @@
 			children = (
 				FB9ABA42169C247200CE14F4 /* DemoAppAppDelegate.h */,
 				FB9ABA43169C247200CE14F4 /* DemoAppAppDelegate.m */,
-				FB9ABA4B169C247200CE14F4 /* DemoAppViewController.h */,
-				FB9ABA4C169C247200CE14F4 /* DemoAppViewController.m */,
-				FB9ABA4E169C247200CE14F4 /* DemoAppViewController.xib */,
+				FB9ABA4B169C247200CE14F4 /* BatchQueryController.h */,
+				FB9ABA4C169C247200CE14F4 /* BatchQueryController.m */,
+				FB9ABA4E169C247200CE14F4 /* BatchQueryController.xib */,
 				FB9ABA3A169C247200CE14F4 /* Supporting Files */,
 				FB9ABA56169C32C000CE14F4 /* CanvasView.h */,
 				FB9ABA57169C32C000CE14F4 /* CanvasView.m */,
@@ -221,7 +221,7 @@
 				FB9ABA46169C247200CE14F4 /* Default.png in Resources */,
 				FB9ABA48169C247200CE14F4 /* Default@2x.png in Resources */,
 				FB9ABA4A169C247200CE14F4 /* Default-568h@2x.png in Resources */,
-				FB9ABA50169C247200CE14F4 /* DemoAppViewController.xib in Resources */,
+				FB9ABA50169C247200CE14F4 /* BatchQueryController.xib in Resources */,
 				FB9ABA5D169C35F600CE14F4 /* SourcesTable.xib in Resources */,
 				FB9ABA62169C362100CE14F4 /* FieldsTable.xib in Resources */,
 				FBB1BC2416A4324100AFFAE7 /* round_delete.png in Resources */,
@@ -237,7 +237,7 @@
 			files = (
 				FB9ABA40169C247200CE14F4 /* main.m in Sources */,
 				FB9ABA44169C247200CE14F4 /* DemoAppAppDelegate.m in Sources */,
-				FB9ABA4D169C247200CE14F4 /* DemoAppViewController.m in Sources */,
+				FB9ABA4D169C247200CE14F4 /* BatchQueryController.m in Sources */,
 				FB9ABA58169C32C000CE14F4 /* CanvasView.m in Sources */,
 				FB9ABA5C169C35F600CE14F4 /* SourcesTable.m in Sources */,
 				FB9ABA61169C362100CE14F4 /* FieldsTable.m in Sources */,
@@ -261,12 +261,12 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		FB9ABA4E169C247200CE14F4 /* DemoAppViewController.xib */ = {
+		FB9ABA4E169C247200CE14F4 /* BatchQueryController.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				FB9ABA4F169C247200CE14F4 /* en */,
 			);
-			name = DemoAppViewController.xib;
+			name = BatchQueryController.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

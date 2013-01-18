@@ -12,5 +12,5 @@
 @property (strong) NSString *name;
 @property (strong) NSString *sourceID;
 @property (strong) NSMutableArray *fieldVOs;
-
+@property BOOL isSelected;
 @end

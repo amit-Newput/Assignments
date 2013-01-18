@@ -11,4 +11,13 @@
 
 @implementation BQBDataVO
 
+-(id) init{
+    
+    if (self = [super init])  {
+        self.sourceVOs = [[NSMutableArray alloc] init];
+        self.connectionVOs = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 @end

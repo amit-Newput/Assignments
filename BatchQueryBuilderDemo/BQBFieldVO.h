@@ -24,4 +24,8 @@
 @property (strong) NSString *aggregateFunction;
 @property (strong) NSString *criteria;
 @property (strong) BQBSourceVO *sourceVO;
+
+// return sourceVO.name + field.name
+-(NSString *)expression;
+
 @end

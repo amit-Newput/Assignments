@@ -12,8 +12,9 @@
 #import "FieldsTable.h"
 #import "DataCell.h"
 #import "BQBDataVO.h"
+#import "MultiColumnTableView.h"
 
-@interface BatchQueryController : UIViewController<FieldsTableDelegate,CanvasViewDelegate>{
+@interface BatchQueryController : UIViewController<FieldsTableDelegate,CanvasViewDelegate,MultiColumnTableViewDelegate>{
     IBOutlet UIView *canvasBackView;
     IBOutlet UIView *sourcesTableBackView;
     SourcesTable *sourcesTable;
@@ -27,12 +28,15 @@
 }
 
 @property (strong) IBOutlet UIView *canvasBackView;
+@property (strong) IBOutlet MultiColumnTableView *grid;
+@property (strong) IBOutlet CanvasView *canvasView ;
+
 @property (strong) IBOutlet UIView *sourcesTableBackView;
 @property (strong) UIScrollView   *connectionListView;
 //@property (strong) NSMutableArray *sourceVOs;
 @property (strong) SourcesTable *sourcesTable;
 @property (strong) UINavigationController *sourcesTableNav;
-@property (strong) CanvasView *canvasView ;
+
 @property (strong) NSMutableDictionary *canvasViewTablesDic;
 @property (strong) BQBDataVO * dataVO;
 @end

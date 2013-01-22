@@ -13,6 +13,6 @@
 @interface BQBDataVO : NSObject
 @property (strong) NSMutableArray *sourceVOs;
 @property (strong) NSMutableArray *connectionVOs;
-
+-(NSArray *)gridFields;
 
 @end

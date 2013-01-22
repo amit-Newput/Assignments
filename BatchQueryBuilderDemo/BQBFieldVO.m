@@ -10,4 +10,8 @@
 
 @implementation BQBFieldVO
 
+-(NSString *)expression{
+    return [NSString stringWithFormat:@"%@.%@",self.sourceVO.name,self.name];
+}
+
 @end

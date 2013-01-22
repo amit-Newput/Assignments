@@ -31,10 +31,17 @@
     if (self) {
         // Initialization code
         [self setup];
-        self.delegate = self;
+        
     }
     return self;
 }
+-(id)initWithCoder:(NSCoder *)aDecoder{
+    if (self = [super initWithCoder:aDecoder]) {
+        [self setup];
+    }
+    return self;
+}
+
 -(CGFloat)highlightedLineWidth{
     static BOOL shouldInc = YES;
     
@@ -115,6 +122,7 @@
     return [NSArray arrayWithObjects:line1,line2,line3,line4, nil];
 }
 -(void)setup{
+    self.delegate = self;
     lineWidth = 5.0;
     lineColor = [UIColor redColor];
     fillColor = [UIColor clearColor];

@@ -31,6 +31,10 @@
 		FBB1BBE2169D620500AFFAE7 /* BQBLineVO.m in Sources */ = {isa = PBXBuildFile; fileRef = FBB1BBE1169D620500AFFAE7 /* BQBLineVO.m */; };
 		FBB1BC2416A4324100AFFAE7 /* round_delete.png in Resources */ = {isa = PBXBuildFile; fileRef = FBB1BC2316A4324000AFFAE7 /* round_delete.png */; };
 		FBB1BC2E16A43B1D00AFFAE7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB1BC2D16A43B1D00AFFAE7 /* QuartzCore.framework */; };
+		FBD91D6416AD6DA7007DFA64 /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD91D6316AD6DA6007DFA64 /* GridCell.m */; };
+		FBD91D6E16AD6DDC007DFA64 /* SingletonClass.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD91D6B16AD6DDC007DFA64 /* SingletonClass.m */; };
+		FBD91D6F16AD6DDC007DFA64 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD91D6D16AD6DDC007DFA64 /* Constants.m */; };
+		FBD91D7316AD6E6F007DFA64 /* MultiColumnTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD91D7216AD6E6E007DFA64 /* MultiColumnTableView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +76,14 @@
 		FBB1BBE1169D620500AFFAE7 /* BQBLineVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BQBLineVO.m; sourceTree = "<group>"; };
 		FBB1BC2316A4324000AFFAE7 /* round_delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = round_delete.png; sourceTree = "<group>"; };
 		FBB1BC2D16A43B1D00AFFAE7 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FBD91D6216AD6DA6007DFA64 /* GridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCell.h; sourceTree = "<group>"; };
+		FBD91D6316AD6DA6007DFA64 /* GridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridCell.m; sourceTree = "<group>"; };
+		FBD91D6A16AD6DDC007DFA64 /* SingletonClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingletonClass.h; sourceTree = "<group>"; };
+		FBD91D6B16AD6DDC007DFA64 /* SingletonClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SingletonClass.m; sourceTree = "<group>"; };
+		FBD91D6C16AD6DDC007DFA64 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		FBD91D6D16AD6DDC007DFA64 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
+		FBD91D7116AD6E6E007DFA64 /* MultiColumnTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiColumnTableView.h; sourceTree = "<group>"; };
+		FBD91D7216AD6E6E007DFA64 /* MultiColumnTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiColumnTableView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +142,9 @@
 		FB9ABA39169C247200CE14F4 /* BatchQueryBuilderDemo */ = {
 			isa = PBXGroup;
 			children = (
+				FBD91D7116AD6E6E007DFA64 /* MultiColumnTableView.h */,
+				FBD91D7216AD6E6E007DFA64 /* MultiColumnTableView.m */,
+				FBD91D7016AD6E25007DFA64 /* ignoreThis */,
 				FB9ABA42169C247200CE14F4 /* DemoAppAppDelegate.h */,
 				FB9ABA43169C247200CE14F4 /* DemoAppAppDelegate.m */,
 				FB9ABA4B169C247200CE14F4 /* BatchQueryController.h */,
@@ -163,6 +178,19 @@
 				FB9ABA49169C247200CE14F4 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FBD91D7016AD6E25007DFA64 /* ignoreThis */ = {
+			isa = PBXGroup;
+			children = (
+				FBD91D6216AD6DA6007DFA64 /* GridCell.h */,
+				FBD91D6316AD6DA6007DFA64 /* GridCell.m */,
+				FBD91D6A16AD6DDC007DFA64 /* SingletonClass.h */,
+				FBD91D6B16AD6DDC007DFA64 /* SingletonClass.m */,
+				FBD91D6C16AD6DDC007DFA64 /* Constants.h */,
+				FBD91D6D16AD6DDC007DFA64 /* Constants.m */,
+			);
+			name = ignoreThis;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -247,6 +275,10 @@
 				61D9267F169FEDD9004A856D /* BQBSourceVO.m in Sources */,
 				61D9268216A01587004A856D /* DataCell.m in Sources */,
 				6141E3CE16A7CC5D00BC335C /* BQBDataVO.m in Sources */,
+				FBD91D6416AD6DA7007DFA64 /* GridCell.m in Sources */,
+				FBD91D6E16AD6DDC007DFA64 /* SingletonClass.m in Sources */,
+				FBD91D6F16AD6DDC007DFA64 /* Constants.m in Sources */,
+				FBD91D7316AD6E6F007DFA64 /* MultiColumnTableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

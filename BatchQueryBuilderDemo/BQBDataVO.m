@@ -20,4 +20,17 @@
     return self;
 }
 
+-(NSArray *) gridFields{
+    NSMutableArray *tempArray = [NSMutableArray array];
+    for (BQBSourceVO *source in self.sourceVOs) {
+        if (source.isSelected) {
+            for (BQBFieldVO *field in source.fieldVOs) {
+                if (field.isSelected) {
+                    [tempArray addObject:field];
+                }
+            }
+        }
+    }
+    return [NSArray arrayWithArray:tempArray];
+}
 @end

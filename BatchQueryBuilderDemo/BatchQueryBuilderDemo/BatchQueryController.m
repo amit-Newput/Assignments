@@ -27,6 +27,15 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 #define defaultXCoordGapBetweenTwoTables 350
 #define defaultYCoordGapBetweenTwoTables 250
 
+typedef enum  {
+    ColumnIndexOutput,
+    ColumnIndexExpression,
+    ColumnIndexAggregate,
+    ColumnIndexAlias,
+    ColumnIndexGroupBy,
+    ColumnIndexCriteria
+} ColumnIndex;
+
 @interface BatchQueryController (){
     int numberOfTablesExistInCanvasView;
     int lastUsedConnectionColorIndex;
@@ -38,6 +47,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 -(void) handlePanningCanvasTable:(UIPanGestureRecognizer *) gesture;
 -(void) clearDraggingObjects;
 @property (strong) NSMutableDictionary *tagByTableNameMapping;
+@property (strong) NSArray *gridRows;
 //@property (strong, nonatomic) NSMutableArray *connectionVOs;
 @end
 
@@ -51,6 +61,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @synthesize tagByTableNameMapping;
 @synthesize connectionListView;
 @synthesize dataVO;
+
 
 
 // set Mode NO to load Data to mimic the adding functionality of Batch Query
@@ -138,25 +149,21 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(0, 0, self.canvasBackView.frame.size.width -60, self.canvasBackView.frame.size.height)];
-    canvasView.backgroundColor = [UIColor colorWithWhite:.95 alpha:1.0];
-    canvasView.target =self;
-    canvasView.layer.borderColor = [UIColor grayColor].CGColor;
-    canvasView.layer.borderWidth = 1.0;
+    self.canvasView.target = self;
+    self.canvasView.layer.borderColor = [UIColor grayColor].CGColor;
+    self.canvasView.layer.borderWidth = 1.0;
+    self.grid.multiColumnTableViewDelegate = self;
     
     // Add gradiant
 //    CAGradientLayer *gradient = [CAGradientLayer layer];
 //    gradient.frame = canvasView.bounds;
 //    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor darkGrayColor] CGColor],(id)[[UIColor colorWithWhite:0.9 alpha:0.5] CGColor], (id)[[UIColor colorWithWhite:0.4 alpha:0.5] CGColor], nil];
 //    [canvasView.layer insertSublayer:gradient atIndex:0];
-    
-
-    [self.canvasBackView addSubview:canvasView];
     self.connectionListView = [[UIScrollView alloc] initWithFrame:CGRectMake(self.canvasBackView.frame.size.width -60, 0, 60, self.canvasBackView.frame.size.height)];
     self.connectionListView.backgroundColor = [UIColor colorWithWhite:.73 alpha:1.0];//[UIColor darkGrayColor];
     connectionListView.layer.borderColor = [UIColor grayColor].CGColor;
     connectionListView.layer.borderWidth = 1.0;
-    [self.canvasBackView addSubview:self.connectionListView];
+    //[self.canvasBackView addSubview:self.connectionListView];
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFacetPanning:)];
     [self.sourcesTableBackView addGestureRecognizer:panGesture];
     
@@ -179,6 +186,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self.sourcesTableBackView addSubview:sourcesTableNav.view];
     
     self.dataVO =[self getNewBQBDataVOWithEditMode:YES];
+//    //[self.grid removeFromSuperview];
+//    self.grid = [[MultiColumnTableView alloc]initWithFrame:self.grid.frame];
+//    self.grid.multiColumnTableViewDelegate = self;
+//    [self.view addSubview:self.grid];
+    [self.grid reloadData];
 }
 
 -(void) viewDidAppear:(BOOL)animated{
@@ -201,6 +213,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         
         
         UINavigationController *sourceValueTableNav = [[UINavigationController alloc] initWithRootViewController:fieldTable];
+        sourceValueTableNav.view.autoresizingMask = UIViewAutoresizingNone;
         // Create Delete Button for Field Table
         //                 UIButton *button = [UIButton  buttonWithType:UIButtonTypeCustom];
         //                 [button setTitle:@"X" forState:UIControlStateNormal];
@@ -580,7 +593,10 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     return YES;
 }
 
-
+-(void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation{
+    [self redrawCanvasView];
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+}
 -(void) redrawCanvasView{
     NSMutableArray * lines = [[ NSMutableArray alloc] init];
     for (BQBConnectionVO *objConnectionVO in self.dataVO.connectionVOs) {
@@ -738,7 +754,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         
         
         if([tableNav.view pointInside:[gesture locationInView:tableNav.view] withEvent:nil]){
-            [self handleTappingCanvasTable:gesture];
+            //[self handleTappingCanvasTable:gesture];
             
             if([fieldsTable.navigationItem.leftBarButtonItem.customView  pointInside:startingPointInTableNav withEvent:nil]){
                 
@@ -752,13 +768,14 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
                 [self.tagByTableNameMapping removeObjectForKey:[NSString stringWithFormat:@"%d",tableNav.view.tag]];
                  [tableNav.view removeFromSuperview];
                 [self redrawCanvasView];
-                
+                [self.grid reloadData];
                 
             }else if([tableNav.topViewController.view pointInside:startingPointInTableView withEvent:nil]){
                 
                 CGPoint cellPoint = [gesture locationInView:fieldsTable.view];
                 NSIndexPath *indexPath = [fieldsTable.tableView indexPathForRowAtPoint:cellPoint];
                 [fieldsTable tableView:fieldsTable.tableView didSelectRowAtIndexPath:indexPath];
+                [self.grid reloadData];
             }
 
             break;            
@@ -796,6 +813,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
         }
     }
     self.canvasView.contentSize = size;
+    [self.canvasView flashScrollIndicators];
 }
 
 
@@ -916,4 +934,100 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     return dataVO;
 }
 
+#pragma mark - MultiColumnTableViewDelegate method
+
+-(int)multiColumnTableView:(MultiColumnTableView *)tableView numberOfRowsInSection:(int)section{
+    self.gridRows = [self.dataVO gridFields];
+    return self.gridRows.count;
+}
+-(int)numberOfSectionsInMultiColumnTableView:(MultiColumnTableView *)tableView{
+    return 1;
+}
+-(int)numberOfColumnsForMultiColumnTableView:(MultiColumnTableView *)tableView{
+    return 6;
+}
+-(NSArray *)columnWidthRatiosForMultiColumnTableView:(MultiColumnTableView *)tableView{
+    return [NSArray arrayWithObjects:[NSNumber numberWithFloat:0.09],[NSNumber numberWithFloat:0.45],[NSNumber numberWithFloat:0.12],[NSNumber numberWithFloat:0.13],[NSNumber numberWithFloat:0.11],[NSNumber numberWithFloat:0.1], nil];
+}
+-(CGFloat)multiColumnTableView:(MultiColumnTableView *)tableView heightForHeaderInSection:(int)section{
+    return 44;
+}
+-(NSArray *)headerTitlesForColumnInMultiColumnTableView:(MultiColumnTableView *)tableView{
+    return [NSArray arrayWithObjects:@"Output",@"Expression",@"Aggregate",@"Alias",@"GroupBy",@"Criteria", nil];
+}
+-(UIView *)multiColumnTableView:(MultiColumnTableView *)tableView viewForColumn:(int)columnIndex atRow:(int)rowIndex{
+    
+    
+    UIView *viewForIndex = nil;
+    
+    switch (columnIndex)
+    {
+        case ColumnIndexOutput:
+        {
+            UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [deleteButton setImage:[UIImage imageNamed:@"round_delete.png"] forState:UIControlStateNormal];
+            deleteButton.frame = CGRectMake(0, 0, 22, 22);
+            [deleteButton addTarget:self action:@selector(deleteHandler:) forControlEvents:UIControlEventTouchDown];
+            deleteButton.tag = rowIndex;
+            viewForIndex = deleteButton;
+        }
+            break;
+        case ColumnIndexExpression:
+        {
+            CGRect outputViewFrame = CGRectMake(0.0, 0.0, 200.0, 30.0);
+            UILabel *label = [[UILabel alloc] initWithFrame:outputViewFrame];
+            BQBFieldVO *field = [self.gridRows objectAtIndex:rowIndex];
+            label.text = field.expression;
+            viewForIndex = label;
+        }
+            
+            break;
+        case ColumnIndexAggregate :
+        {
+            CGRect outputViewFrame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+            UITextField *textField = [[UITextField alloc] initWithFrame:outputViewFrame];
+            viewForIndex = textField;
+            
+        }
+            break;
+        case ColumnIndexAlias :
+        {
+            CGRect outputViewFrame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+            UITextField *textField = [[UITextField alloc] initWithFrame:outputViewFrame];
+            viewForIndex = textField;
+            
+        }
+            break;
+            
+        case ColumnIndexGroupBy :
+        {
+            
+            
+            UIButton *deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [deleteButton setImage:[UIImage imageNamed:@"round_delete.png"] forState:UIControlStateNormal];
+            deleteButton.frame = CGRectMake(0, 0, 22, 22);
+            [deleteButton addTarget:self action:@selector(deleteHandler:) forControlEvents:UIControlEventTouchDown];
+            viewForIndex = deleteButton;
+            
+        }
+            break;
+        case ColumnIndexCriteria :
+        {
+            CGRect outputViewFrame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+            viewForIndex = [[UITextField alloc] initWithFrame:outputViewFrame];
+        }
+            break;
+    }
+    
+    return viewForIndex;
+}
+
+-(void)deleteHandler:(UIButton *)btn{
+    BQBFieldVO *field = [self.gridRows objectAtIndex:btn.tag];
+    field.isSelected = NO;
+    [self.grid reloadData];
+    UINavigationController *tableNav = [self.canvasViewTablesDic objectForKey:field.sourceVO.sourceID];
+    FieldsTable *fieldsTable = (FieldsTable *)[tableNav topViewController];
+    [fieldsTable.tableView reloadData];
+}
 @end
